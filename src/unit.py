@@ -13,6 +13,8 @@ class PathTile:
         self.srcY = y
         self.cost = cost
         self.parent = parent
+    def __str__(self):
+        return f"Pathtile of cost {self.cost} -> ({self.srcX}, {self.srcY})"
 
 class Unit:
     def __init__(self, x, y, template, owner):
@@ -76,20 +78,21 @@ class Unit:
         #endif
         
         possibleTiles = []
+        activeTiles = []
         for i in range(globals.mapSizeY * globals.mapSizeX):
-            possibleTiles.append(None)
+            activeTiles.append(None)
         #endfor
 
-        possibleTiles.append(PathTile(self.x, self.y, 0, None)) #pole startowe
+        possibleTiles.append(PathTile(self.posX, self.posY, 0, None)) #pole startowe
         while (len(possibleTiles) > 0):
             curTile = possibleTiles[0] #odwołanie do pierwszego elementu
-
             if (curTile.srcX == x and curTile.srcY == y): #jeśli jesteśmy u celu
                 result = []
                 while (curTile.parent != None): #spisywanie ścieżki
                     result.append(curTile)
                     curTile = curTile.parent
                 #endwhile
+                result.reverse()
                 return result
             #endif
 
@@ -97,16 +100,17 @@ class Unit:
                 offX = curTile.srcX + surround[i * 2]
                 offY = curTile.srcY + surround[i * 2 + 1]
                 if (globals.IsFreeFor(self, offX, offY)): #czy pole jest puste
-                    temp = possibleTiles[offY * globals.mapSizeX + offX] #zapisanie odwołania do sąsiedniego pola
+                    temp = activeTiles[offY * globals.mapSizeX + offX] #zapisanie odwołania do sąsiedniego pola
                     if (temp == None):
-                        possibleTiles[offY * globals.mapSizeX + offX] = PathTile(offX, offY, curTile.cost + 1, curTile)
+                        activeTiles[offY * globals.mapSizeX + offX] = PathTile(offX, offY, curTile.cost + 1, curTile)
+                        possibleTiles.append(activeTiles[offY * globals.mapSizeX + offX])
                     elif (temp.cost > curTile.cost + 1):
                         temp.cost = curTile.cost + 1
                         temp.parent = curTile
                     #endif
                 #endif
             #endfor
-            possibleTiles.pop(0)
+            activeTiles.append(possibleTiles.pop(0))
         #endwhile
         return []
 
@@ -119,3 +123,17 @@ class UnitTemplate:
         self.speed = spd
         self.damageType = dT
         self.armorType = aT
+
+if (__name__ == "__main__"): #test pathfindingu
+    globals.mapSizeX = 10
+    globals.mapSizeY = 10
+    for i in range(100):
+        globals.tileList.append(None)
+
+    tempTemplate = UnitTemplate(0, 1, 0, 0, 5, 0, 0)
+    tempUnit = Unit(1, 1, tempTemplate, 0)
+
+    pathRes = globals.unitList[0].pathTo(5, 8)
+    for i in range(len(pathRes)):
+        print(pathRes[i])
+
