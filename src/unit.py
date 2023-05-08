@@ -12,6 +12,12 @@ class Unit:
             self.moveRem = template.speed
             self.damageType = template.damageType
             self.armorType = template.armorType
+        
+    def takeDamage(self, dmg, dT):
+        
+    def setPos(self, x, y):
+
+    def moveTo(self, x, y):
 
 class UnitTemplate:
     def __init__(self, id, hp, dmg, rng, spd, dT, aT):
