@@ -17,6 +17,9 @@ def GetPathFromTo(x1, y1, x2, y2):
     return
 
 def IsFreeFor(unit, x, y):
+    if ((x < 0 or x >= mapSizeX) or (y < 0 or y >= mapSizeY)):
+        return False
+
     dest = tileList[y * mapSizeX + x]
     if (dest != unit and dest != None):
         return False

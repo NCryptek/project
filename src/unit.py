@@ -1,5 +1,12 @@
 import globals
 
+surround = [ #pozycje sąsiednich kratek
+     0, -1, #północ
+     1,  0, #wschód
+     0,  1, #południe
+    -1,  0  #zachód
+]
+
 class PathTile:
     def __init__(self, x, y, cost, parent):
         self.srcX = x
@@ -64,14 +71,44 @@ class Unit:
         self.moveRem -= dist
 
     def pathTo(self, x, y):
-        result = []
         if (not globals.IsFreeFor(self, x, y)):
-            return None
+            return []
+        #endif
         
-        
+        possibleTiles = []
+        for i in range(globals.mapSizeY * globals.mapSizeX):
+            possibleTiles.append(None)
+        #endfor
 
+        possibleTiles.append(PathTile(self.x, self.y, 0, None)) #pole startowe
+        while (len(possibleTiles) > 0):
+            curTile = possibleTiles[0] #odwołanie do pierwszego elementu
 
-        return result
+            if (curTile.srcX == x and curTile.srcY == y): #jeśli jesteśmy u celu
+                result = []
+                while (curTile.parent != None): #spisywanie ścieżki
+                    result.append(curTile)
+                    curTile = curTile.parent
+                #endwhile
+                return result
+            #endif
+
+            for i in range(4): #sprawdza wszystkie sąsiednie pola
+                offX = curTile.srcX + surround[i * 2]
+                offY = curTile.srcY + surround[i * 2 + 1]
+                if (globals.IsFreeFor(self, offX, offY)): #czy pole jest puste
+                    temp = possibleTiles[offY * globals.mapSizeX + offX] #zapisanie odwołania do sąsiedniego pola
+                    if (temp == None):
+                        possibleTiles[offY * globals.mapSizeX + offX] = PathTile(offX, offY, curTile.cost + 1, curTile)
+                    elif (temp.cost > curTile.cost + 1):
+                        temp.cost = curTile.cost + 1
+                        temp.parent = curTile
+                    #endif
+                #endif
+            #endfor
+            possibleTiles.pop(0)
+        #endwhile
+        return []
 
 class UnitTemplate:
     def __init__(self, id, hp, dmg, rng, spd, dT, aT):
