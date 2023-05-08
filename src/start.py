@@ -1,7 +1,7 @@
 import unit
 import setup
 def main():
-
+    setup.setup()
 
     return
 

@@ -6,6 +6,7 @@ playerAmt = 0
 
 tileList = []
 unitList = []
+unitTemplates = []
 
 currentPlayer = 0
 currentUnit = None

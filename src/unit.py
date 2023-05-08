@@ -115,7 +115,8 @@ class Unit:
         return []
 
 class UnitTemplate:
-    def __init__(self, id, hp, dmg, rng, spd, dT, aT):
+    def __init__(self, name, id, hp, dmg, rng, spd, dT, aT):
+        self.displayName = name
         self.typeId = id
         self.maxHealth = hp
         self.damage = dmg
@@ -130,16 +131,16 @@ if (__name__ == "__main__"): #test pathfindingu
     for i in range(100):
         globals.tileList.append(None)
 
-    tempTemplate = UnitTemplate(0, 1, 0, 0, 5, 0, 0)
+    tempTemplate = UnitTemplate("", 0, 1, 0, 0, 5, 0, 0)
     tempUnit = Unit(1, 1, tempTemplate, 0)
 
-    pathRes = globals.unitList[0].pathTo(5, 8)
+    pathRes = tempUnit.pathTo(5, 8)
     for i in range(len(pathRes)):
         print(pathRes[i])
 
-PiechotaTemplate = UnitTemplate(1, 5, 2, 1, 5, 0, 0)
-RocketTemplate = UnitTemplate(2, 3, 5, 1, 4, 1, 0)
-PPTemplate = UnitTemplate(3, 5, 2, 1, 8, 0, 1)
-TankTemplate = UnitTemplate(4, 6, 4, 1, 2, 2, 1)
-DPTemplate = UnitTemplate(5, 2, 5, 2, 3, 1, 0)
-ArtileryTemplate = UnitTemplate(6, 1, 4, 4, 2, 2, 0)
+globals.unitTemplates.append(UnitTemplate("Piechota", 0, 5, 2, 1, 5, 0, 0))
+globals.unitTemplates.append(UnitTemplate("Wyrzutnie Rakiet", 1, 3, 5, 1, 4, 1, 0))
+globals.unitTemplates.append(UnitTemplate("Pojazd Przeciwpiechotny", 2, 5, 2, 1, 8, 0, 1))
+globals.unitTemplates.append(UnitTemplate("Czołg", 3, 6, 4, 1, 2, 2, 1))
+globals.unitTemplates.append(UnitTemplate("Działo Przeciwpancerne", 4, 2, 5, 2, 3, 1, 0))
+globals.unitTemplates.append(UnitTemplate("Artyleria", 5, 1, 4, 4, 2, 2, 0))
