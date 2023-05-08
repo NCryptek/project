@@ -14,10 +14,11 @@ class Unit:
             self.armorType = template.armorType
         
     def takeDamage(self, dmg, dT):
-        
+        return
     def setPos(self, x, y):
-
+        return
     def moveTo(self, x, y):
+        return
 
 class UnitTemplate:
     def __init__(self, id, hp, dmg, rng, spd, dT, aT):
