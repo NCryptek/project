@@ -137,3 +137,9 @@ if (__name__ == "__main__"): #test pathfindingu
     for i in range(len(pathRes)):
         print(pathRes[i])
 
+PiechotaTemplate = UnitTemplate(1, 5, 2, 1, 5, 0, 0)
+RocketTemplate = UnitTemplate(2, 3, 5, 1, 4, 1, 0)
+PPTemplate = UnitTemplate(3, 5, 2, 1, 8, 0, 1)
+TankTemplate = UnitTemplate(4, 6, 4, 1, 2, 2, 1)
+DPTemplate = UnitTemplate(5, 2, 5, 2, 3, 1, 0)
+ArtileryTemplate = UnitTemplate(6, 1, 4, 4, 2, 2, 0)
