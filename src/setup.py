@@ -79,5 +79,43 @@ def setup():
         lastKey = keyboard.read_key()
         sleep(0.05)
         
-        
+"""
+def printMap():
+    os.system('clear')
+    corners = {
+               "upperLeft":     "┌",    #218 np. chr(218)
+               "upperRight":    "┐",    #191
+               "mediumLeft":    "├",    #195 
+               "mediumRight":   "┤",    #180
+               "bottomLeft":    "└",    #192
+               "bottomRight":   "┘",    #217
+               "upperMid":      "┬",    #194
+               "midiumMid":     "┼",    #197
+               "bottomMid":     "┴"     #193
+              }
+    lines =   {
+               "vertical": "│",         #179
+               "horizontal": "─"        #196
+              }
+    
+    
 
+    verticalLine = [lines["horizontal"]*3]*globals.mapSizeX        
+    verticalUp = corners["upperMid"].join(verticalLine)
+    verticalMid = corners["midiumMid"].join(verticalLine)
+    verticalDown = corners["bottomMid"].join(verticalLine)
+
+   
+    print(corners["upperLeft"]+verticalUp+corners["upperRight"])
+    for i in range(globals.mapSizeY-1):
+        for j in range(globals.mapSizeX):
+            print(lines["vertical"], end="")  
+            print("   ", end="")
+        print(lines["vertical"]) 
+        if(i < globals.mapSizeX-1): print(corners["mediumLeft"]+verticalMid+corners["mediumRight"])
+    for j in range(globals.mapSizeX):
+        print(lines["vertical"], end="")  
+        print("   ", end="")
+    print(lines["vertical"]) 
+    print(corners["bottomLeft"]+verticalDown+corners["bottomRight"])
+"""
