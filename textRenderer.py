@@ -1,4 +1,5 @@
 from colorama import just_fix_windows_console
+import os
 
 RESETCOLOR = 0
 BLACK = 1
@@ -9,6 +10,18 @@ BLUE = 5
 MAGENTA = 6
 CYAN = 7
 WHITE = 8
+
+CORNER_TL = "┌"
+CORNER_TR = "┐"
+CORNER_BL = "└"
+CORNER_BR = "┘"
+INTER_VERT_R = "├"
+INTER_VERT_L = "┤"
+INTER_HORZ_B = "┬"
+INTER_HORZ_T = "┴"
+INTER_QUAD = "┼"
+LINE_VERT = "│"
+LINE_HORZ = "─"
 
 def GetColorCode(foreground, background):
     foreColor = 0
@@ -37,6 +50,18 @@ def GetColorNum(foreground, background):
 
     return (foreground << 4) + background
 
+def clearScreen():
+    try: 
+        os.system("cls")
+    except:
+        os.system("clear")
+
+def setCursorPos(x, y):
+    print(f"\033[{y};{x}H", end="")
+
+def resetCursorPos():
+    print("\033[0;0H", end="")
+
 class TextRenderer:
     def __init__(self, sizeX, sizeY):
         self.sizeX = sizeX
@@ -51,6 +76,11 @@ class TextRenderer:
         self.sizeY = newY
         self.textBfr = [' '] * (newX * newY)
         self.colorBfr = [0] * (newX * newY)
+
+    def SetCursorPos(self, newX, newY):
+        self.cursorX = newX
+        self.cursorY = newY
+        setCursorPos(newX, newY)
 
     def FillChar(self, char, x1, y1, x2, y2):
         for y in range(y1, y2):
@@ -68,6 +98,10 @@ class TextRenderer:
     def FillColorAll(self, color):
         self.colorBfr = [color] * (self.sizeX * self.sizeY)
 
+    def GenGrid(self, x1, y1, x2, y2, cellWidth, cellHeight):
+        
+        pass
+
     def Print(self):
         temp = ""
         curColor = 0
@@ -81,7 +115,22 @@ class TextRenderer:
             #temp = temp.join(self.textBfr[y * self.sizeX:(y + 1) * self.sizeX:])
             print(temp, end="\n")
             temp = ""
+        self.cursorX = 0
+        self.cursorY += self.sizeY
         print("\033[0m")
+
+    def Overwrite(self):
+        self.cursorX = 0
+        self.cursorY = 0
+        resetCursorPos()
+        self.Print()
+
+    def ClearScreen(self):
+        self.textBfr = [' '] * (self.sizeX * self.sizeY)
+        self.colorBfr = [0] * (self.sizeX * self.sizeY)
+        self.cursorX = 0
+        self.cursorY = 0
+        clearScreen()
 
 if (__name__ == "__main__"):
     just_fix_windows_console()

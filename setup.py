@@ -5,23 +5,11 @@ import keyboard
 from  colorama import Fore 
 from time import sleep
 import textRenderer
-def clearScreen():
-    try: 
-        os.system("cls")
-    except:
-        os.system("clear")
-
-def setCursorPos(x, y):
-    print(f"\033[{y};{x}H", end="")
-
-def resetCursorPos():
-    print("\033[0;0H", end="")
 
 def MapSize():
     value = True
-    
+    textRenderer.clearScreen()
     while value:
-        clearScreen()
         print("Proszę nie podawaj zbyt dużych wartości.")
         print("Podaj wielkość mapy OSOBNO ORAZ KOLEJNO poziomo i pionowo")
         mapSizeX = input()
@@ -35,8 +23,8 @@ def MapSize():
 
 def PlayerCount():
     value = True
+    textRenderer.clearScreen()
     while value:
-        clearScreen()
         print("Podaj ilość jednostek na gracza (1-5)")
         #playerCount = #input()
         armySize = input()
@@ -51,12 +39,6 @@ def PlayerCount():
             continue
         value = False 
 
-def clean():
-    try: 
-        os.system("cls")
-    except:
-        os.system("clear")
-
 def printWhite(data):
     print(Fore.WHITE,data,end="",sep="")
 
@@ -67,7 +49,6 @@ def printGreen(data):
     print(Fore.GREEN,data,end="",sep="")
 
 def printScreen():
-    clean()
     corners = {
         "upperLeft":     "┌",    
         "upperRight":    "┐",    
@@ -111,9 +92,9 @@ def setup():
     for i in range(globals.startUnitAmt):
         selects.append(i)
 
-    clearScreen()
+    textRenderer.clearScreen()
     while value:
-        resetCursorPos()
+        textRenderer.resetCursorPos()
         if (changeTo == -1):
             if (lastKey == "up"): # strzałka w górę
                 curOption -= 1
