@@ -7,11 +7,7 @@ def clean():
     try: 
         os.system("cls")
     except:
-        return
-    try:
         os.system("clear")
-    except:
-        return    
 
 def setup():
     value = True
