@@ -3,17 +3,24 @@ import os
 import unit
 import keyboard
 from time import sleep
-def clean():
+import textRenderer
+def clearScreen():
     try: 
         os.system("cls")
     except:
         os.system("clear")
 
+def setCursorPos(x, y):
+    print(f"\033[{y};{x}H", end="")
+
+def resetCursorPos():
+    print("\033[0;0H", end="")
+
 def setup():
     value = True
+    
     while value:
-        
-        clean()
+        clearScreen()
         print("Proszę nie podawaj zbyt dużych wartości.")
         print("Podaj wielkość mapy OSOBNO ORAZ KOLEJNO poziomo i pionowo")
         mapSizeX = input()
@@ -27,7 +34,7 @@ def setup():
 
     value = True
     while value:
-        clean()
+        clearScreen()
         print("Podaj ilość jednostek na gracza (1-5)")
         #playerCount = #input()
         armySize = input()
@@ -52,8 +59,9 @@ def setup():
     for i in range(globals.startUnitAmt):
         selects.append(i)
 
+    clearScreen()
     while value:
-        clean()
+        resetCursorPos()
         if (changeTo == -1):
             if (lastKey == "up"): # strzałka w górę
                 curOption -= 1
@@ -80,11 +88,12 @@ def setup():
                 print("\n> Kontynuuj")
             else:
                 print("\n  Kontynuuj")
-
-        
+        #endif
         lastKey = keyboard.read_key()
-        sleep(0.05)
-        
+        sleep(0.1)
+        #endwhile
+    
+    
 """
 def printMap():
     os.system('clear')

@@ -138,6 +138,7 @@ if (__name__ == "__main__"): #test pathfindingu
     for i in range(len(pathRes)):
         print(pathRes[i])
 
+#def __init__(self, name, id, hp, dmg, rng, spd, dT, aT):
 globals.unitTemplates.append(UnitTemplate("Piechota", 0, 5, 2, 1, 5, 0, 0))
 globals.unitTemplates.append(UnitTemplate("Wyrzutnie Rakiet", 1, 3, 5, 1, 4, 1, 0))
 globals.unitTemplates.append(UnitTemplate("Pojazd Przeciwpiechotny", 2, 5, 2, 1, 8, 0, 1))
