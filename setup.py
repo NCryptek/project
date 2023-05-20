@@ -83,8 +83,14 @@ def printScreen():
 def setup():
     MapSize()
     PlayerCount()
-    
-    value = True
+
+    longestName = 0
+    for i in globals.unitTemplates:
+        if (longestName < len(i.displayName)):
+            longestName = len(i.displayName)
+
+    globals.defaultRenderer.Resize()
+
     selects = []
     curOption = 0
     changeTo = -1
@@ -93,7 +99,7 @@ def setup():
         selects.append(i)
 
     textRenderer.clearScreen()
-    while value:
+    while True:
         textRenderer.resetCursorPos()
         if (changeTo == -1):
             if (lastKey == "up"): # strzałka w górę
@@ -102,7 +108,6 @@ def setup():
                 curOption += 1
             elif (lastKey == "enter"):
                 if (curOption == globals.startUnitAmt):
-                    value = False
                     break
             lastKey = ""
 
@@ -122,6 +127,8 @@ def setup():
                 print("\n> Kontynuuj")
             else:
                 print("\n  Kontynuuj")
+        elif (True):
+            pass
         #endif
         lastKey = keyboard.read_key()
         sleep(0.1)
