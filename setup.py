@@ -2,13 +2,58 @@ import globals
 import os
 import unit
 import keyboard
+from  colorama import Fore 
 from time import sleep
+
 def clean():
     try: 
         os.system("cls")
     except:
         os.system("clear")
 
+def printWhite(data):
+    print(Fore.WHITE,data,end="",sep="")
+
+def printRed(data):
+    print(Fore.RED,data,end="",sep="")
+
+def printGreen(data):
+    print(Fore.GREEN,data,end="",sep="")
+
+def printScreen():
+    clean()
+    corners = {
+               "upperLeft":     "┌",    
+               "upperRight":    "┐",    
+               "mediumLeft":    "├",     
+               "mediumRight":   "┤",    
+               "bottomLeft":    "└",    
+               "bottomRight":   "┘",    
+               "upperMid":      "┬",    
+               "midiumMid":     "┼",    
+               "bottomMid":     "┴"     
+              }
+    lines =   {
+               "vertical": "│",        
+               "horizontal": "─"       
+              }
+
+    verticalLine = [lines["horizontal"]*3]*globals.mapSizeX
+    verticalUp = corners["upperMid"].join(verticalLine)
+    verticalMid = corners["midiumMid"].join(verticalLine)
+    verticalDown = corners["bottomMid"].join(verticalLine)
+   
+    printWhite(corners["upperLeft"]+verticalUp+corners["upperRight"]+"\n")
+    for i in range(globals.mapSizeX):
+        printWhite(lines["vertical"])
+        for j in range(globals.mapSizeY):
+            printWhite("   ")
+            printWhite(lines["vertical"])            
+        print()
+        if(i < globals.mapSizeY-1): printWhite(corners["mediumLeft"]+verticalMid+corners["mediumRight"]+"\n")
+
+    printWhite(corners["bottomLeft"]+verticalDown+corners["bottomRight"]+"\n")
+printScreen()
 def setup():
     value = True
     while value:
@@ -84,44 +129,3 @@ def setup():
         
         lastKey = keyboard.read_key()
         sleep(0.05)
-        
-"""
-def printMap():
-    os.system('clear')
-    corners = {
-               "upperLeft":     "┌",    #218 np. chr(218)
-               "upperRight":    "┐",    #191
-               "mediumLeft":    "├",    #195 
-               "mediumRight":   "┤",    #180
-               "bottomLeft":    "└",    #192
-               "bottomRight":   "┘",    #217
-               "upperMid":      "┬",    #194
-               "midiumMid":     "┼",    #197
-               "bottomMid":     "┴"     #193
-              }
-    lines =   {
-               "vertical": "│",         #179
-               "horizontal": "─"        #196
-              }
-    
-    
-
-    verticalLine = [lines["horizontal"]*3]*globals.mapSizeX        
-    verticalUp = corners["upperMid"].join(verticalLine)
-    verticalMid = corners["midiumMid"].join(verticalLine)
-    verticalDown = corners["bottomMid"].join(verticalLine)
-
-   
-    print(corners["upperLeft"]+verticalUp+corners["upperRight"])
-    for i in range(globals.mapSizeY-1):
-        for j in range(globals.mapSizeX):
-            print(lines["vertical"], end="")  
-            print("   ", end="")
-        print(lines["vertical"]) 
-        if(i < globals.mapSizeX-1): print(corners["mediumLeft"]+verticalMid+corners["mediumRight"])
-    for j in range(globals.mapSizeX):
-        print(lines["vertical"], end="")  
-        print("   ", end="")
-    print(lines["vertical"]) 
-    print(corners["bottomLeft"]+verticalDown+corners["bottomRight"])
-"""
