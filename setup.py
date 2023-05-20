@@ -5,6 +5,40 @@ import keyboard
 from  colorama import Fore 
 from time import sleep
 
+def MapSize():
+    value = True
+    while value:
+        
+        clean()
+        print("Proszę nie podawaj zbyt dużych wartości.")
+        print("Podaj wielkość mapy OSOBNO ORAZ KOLEJNO poziomo i pionowo")
+        mapSizeX = input()
+        mapSizeY = input()
+        try:
+            globals.mapSizeX = int(mapSizeX)
+            globals.mapSizeY = int(mapSizeY)
+        except:
+            continue
+        value = False
+
+def PlayerCount():
+    value = True
+    while value:
+        clean()
+        print("Podaj ilość jednostek na gracza (1-5)")
+        #playerCount = #input()
+        armySize = input()
+        try:
+            globals.playerAmt = 2 #int(playerCount)
+            globals.startUnitAmt = int(armySize)
+        except:
+            continue
+        #if (playerCount<1 or playerCount > 4):
+        #    continue
+        if (int(armySize)<1 or int(armySize)>5):
+            continue
+        value = False 
+
 def clean():
     try: 
         os.system("cls")
@@ -23,20 +57,20 @@ def printGreen(data):
 def printScreen():
     clean()
     corners = {
-               "upperLeft":     "┌",    
-               "upperRight":    "┐",    
-               "mediumLeft":    "├",     
-               "mediumRight":   "┤",    
-               "bottomLeft":    "└",    
-               "bottomRight":   "┘",    
-               "upperMid":      "┬",    
-               "midiumMid":     "┼",    
-               "bottomMid":     "┴"     
-              }
+        "upperLeft":     "┌",    
+        "upperRight":    "┐",    
+        "mediumLeft":    "├",     
+        "mediumRight":   "┤",    
+        "bottomLeft":    "└",    
+        "bottomRight":   "┘",    
+        "upperMid":      "┬",    
+        "midiumMid":     "┼",    
+        "bottomMid":     "┴" 
+        }
     lines =   {
-               "vertical": "│",        
-               "horizontal": "─"       
-              }
+        "vertical": "│",        
+        "horizontal": "─"       
+        }
 
     verticalLine = [lines["horizontal"]*3]*globals.mapSizeX
     verticalUp = corners["upperMid"].join(verticalLine)
@@ -51,44 +85,12 @@ def printScreen():
             printWhite(lines["vertical"])            
         print()
         if(i < globals.mapSizeY-1): printWhite(corners["mediumLeft"]+verticalMid+corners["mediumRight"]+"\n")
-
     printWhite(corners["bottomLeft"]+verticalDown+corners["bottomRight"]+"\n")
-printScreen()
+
 def setup():
-    value = True
-    while value:
-        
-        clean()
-        print("Proszę nie podawaj zbyt dużych wartości.")
-        print("Podaj wielkość mapy OSOBNO ORAZ KOLEJNO poziomo i pionowo")
-        mapSizeX = input()
-        mapSizeY = input()
-        try:
-            globals.mapSizeX = int(mapSizeX)
-            globals.mapSizeY = int(mapSizeY)
-        except:
-            continue
-        value = False
-
-    value = True
-    while value:
-        clean()
-        print("Podaj ilość jednostek na gracza (1-5)")
-        #playerCount = #input()
-        armySize = input()
-        try:
-            globals.playerAmt = 2 #int(playerCount)
-            globals.startUnitAmt = int(armySize)
-        except:
-            continue
-        #if (playerCount<1 or playerCount > 4):
-        #    continue
-        if (int(armySize)<1 or int(armySize)>5):
-            continue
-        value = False
-
-    #tworzenie mapy TODO
-
+    MapSize()
+    PlayerCount()
+    
     value = True
     selects = []
     curOption = 0
