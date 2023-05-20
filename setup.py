@@ -17,7 +17,7 @@ def setCursorPos(x, y):
 def resetCursorPos():
     print("\033[0;0H", end="")
 
-def setup():
+def MapSize():
     value = True
     
     while value:
