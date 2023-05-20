@@ -2,6 +2,7 @@ import globals
 import os
 import unit
 import keyboard
+from  colorama import Fore 
 from time import sleep
 import textRenderer
 def clearScreen():
@@ -32,6 +33,7 @@ def setup():
             continue
         value = False
 
+def PlayerCount():
     value = True
     while value:
         clearScreen()
@@ -47,10 +49,60 @@ def setup():
         #    continue
         if (int(armySize)<1 or int(armySize)>5):
             continue
-        value = False
+        value = False 
 
-    #tworzenie mapy TODO
+def clean():
+    try: 
+        os.system("cls")
+    except:
+        os.system("clear")
 
+def printWhite(data):
+    print(Fore.WHITE,data,end="",sep="")
+
+def printRed(data):
+    print(Fore.RED,data,end="",sep="")
+
+def printGreen(data):
+    print(Fore.GREEN,data,end="",sep="")
+
+def printScreen():
+    clean()
+    corners = {
+        "upperLeft":     "┌",    
+        "upperRight":    "┐",    
+        "mediumLeft":    "├",     
+        "mediumRight":   "┤",    
+        "bottomLeft":    "└",    
+        "bottomRight":   "┘",    
+        "upperMid":      "┬",    
+        "midiumMid":     "┼",    
+        "bottomMid":     "┴" 
+        }
+    lines =   {
+        "vertical": "│",        
+        "horizontal": "─"       
+        }
+
+    verticalLine = [lines["horizontal"]*3]*globals.mapSizeX
+    verticalUp = corners["upperMid"].join(verticalLine)
+    verticalMid = corners["midiumMid"].join(verticalLine)
+    verticalDown = corners["bottomMid"].join(verticalLine)
+   
+    printWhite(corners["upperLeft"]+verticalUp+corners["upperRight"]+"\n")
+    for i in range(globals.mapSizeX):
+        printWhite(lines["vertical"])
+        for j in range(globals.mapSizeY):
+            printWhite("   ")
+            printWhite(lines["vertical"])            
+        print()
+        if(i < globals.mapSizeY-1): printWhite(corners["mediumLeft"]+verticalMid+corners["mediumRight"]+"\n")
+    printWhite(corners["bottomLeft"]+verticalDown+corners["bottomRight"]+"\n")
+
+def setup():
+    MapSize()
+    PlayerCount()
+    
     value = True
     selects = []
     curOption = 0
