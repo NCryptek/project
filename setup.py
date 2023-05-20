@@ -103,6 +103,7 @@ def setup():
             elif (lastKey == "enter"):
                 if (curOption == globals.startUnitAmt):
                     value = False
+                    break
             lastKey = ""
 
             if (curOption < 0):
@@ -124,8 +125,8 @@ def setup():
         #endif
         lastKey = keyboard.read_key()
         sleep(0.1)
-        #endwhile
-    
+    #endwhile
+#enddef setup
     
 """
 def printMap():

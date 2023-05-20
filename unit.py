@@ -59,7 +59,7 @@ class Unit:
         dist = globals.Dist(self.x, self.y, x, y)
 
         if (dist > self.moveRem):
-            print("Cannot move to destination, too little moves left")
+            print("Cannot move to destination, too few moves left")
             return
 
         if (globals.tileList[y * globals.mapSizeX + x] != self and globals.tileList[y * globals.mapSizeX + x] != None):

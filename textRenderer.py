@@ -90,6 +90,15 @@ class TextRenderer:
     def FillCharAll(self, char):
         self.textBfr = [char] * (self.sizeX * self.sizeY)
 
+    def InsertText(self, text, x, y, wrapText = False):
+        startInd = y * self.sizeX + x
+        textLen = len(text)
+        if (not wrapText and x + textLen > self.sizeX):
+            textLen = self.sizeX - x
+
+        for i in range(textLen):
+            self.textBfr[startInd + i] = text[i]
+
     def FillColor(self, color, x1, y1, x2, y2):
         for y in range(y1, y2):
             for x in range(x1, x2):
@@ -99,13 +108,54 @@ class TextRenderer:
         self.colorBfr = [color] * (self.sizeX * self.sizeY)
 
     def GenGrid(self, x1, y1, x2, y2, cellWidth, cellHeight):
-        
-        pass
+        for y in range(y1, y2):
+            if (y < 0 or y + 1 > self.sizeY):
+                continue
+            for x in range(x1, x2):
+                if (x < 0 or x + 1 > self.sizeX):
+                    continue
+                #górna ściana
+                if (y == y1):
+                    if (x == x1):
+                        self.textBfr[y * self.sizeX + x] = CORNER_TL
+                    elif (x == x2 - 1):
+                        self.textBfr[y * self.sizeX + x] = CORNER_TR
+                    elif ((x - x1) % (cellWidth + 1) == 0):
+                        self.textBfr[y * self.sizeX + x] = INTER_HORZ_B
+                    else:
+                        self.textBfr[y * self.sizeX + x] = LINE_HORZ
+                #dolna ściana
+                elif (y == y2 - 1):
+                    if (x == x1):
+                        self.textBfr[y * self.sizeX + x] = CORNER_BL
+                    elif (x == x2 - 1):
+                        self.textBfr[y * self.sizeX + x] = CORNER_BR
+                    elif ((x - x1) % (cellWidth + 1) == 0):
+                        self.textBfr[y * self.sizeX + x] = INTER_HORZ_T
+                    else:
+                        self.textBfr[y * self.sizeX + x] = LINE_HORZ
+                #środek przecięcia
+                elif ((y - y1) % (cellHeight + 1) == 0):
+                    if (x == x1):
+                        self.textBfr[y * self.sizeX + x] = INTER_VERT_R
+                    elif (x == x2 - 1):
+                        self.textBfr[y * self.sizeX + x] = INTER_VERT_L
+                    elif ((x - x1) % (cellWidth + 1) == 0):
+                        self.textBfr[y * self.sizeX + x] = INTER_QUAD
+                    else:
+                        self.textBfr[y * self.sizeX + x] = LINE_HORZ
+                #środek bez przecięć
+                else:
+                    if ((x - x1) % (cellWidth + 1) == 0):
+                        self.textBfr[y * self.sizeX + x] = LINE_VERT
+                    else:
+                        self.textBfr[y * self.sizeX + x] = " "
 
     def Print(self):
         temp = ""
         curColor = 0
         for y in range(self.sizeY):
+            print(GetColorCodeFromNum(curColor), end="")
             for x in range(self.sizeX):
                 if (self.colorBfr[y * self.sizeX + x] != curColor):
                     curColor = self.colorBfr[y * self.sizeX + x]
@@ -113,7 +163,7 @@ class TextRenderer:
                     print("zmiana koloru")
                 temp += self.textBfr[y * self.sizeX + x]
             #temp = temp.join(self.textBfr[y * self.sizeX:(y + 1) * self.sizeX:])
-            print(temp, end="\n")
+            print(temp, "\033[49m", end="\n")
             temp = ""
         self.cursorX = 0
         self.cursorY += self.sizeY
@@ -134,8 +184,9 @@ class TextRenderer:
 
 if (__name__ == "__main__"):
     just_fix_windows_console()
-    testRenderer = TextRenderer(10, 3)
-    testRenderer.FillCharAll("a")
-    testRenderer.FillColorAll(GetColorNum(RED, RESETCOLOR))
-    print(testRenderer.textBfr)
+    testRenderer = TextRenderer(39, 19)
+    testRenderer.GenGrid(-1, -1, 40, 20, 3, 1)
+    #testRenderer.FillCharAll("a")
+    #testRenderer.InsertText("Hello World!", 2, 0)
+    testRenderer.FillColorAll(GetColorNum(RED, GREEN))
     testRenderer.Print()
