@@ -3,11 +3,21 @@ import os
 import unit
 import keyboard
 from time import sleep
+def clean():
+    try: 
+        os.system("cls")
+    except:
+        return
+    try:
+        os.system("clear")
+    except:
+        return    
 
 def setup():
     value = True
     while value:
-        os.system("cls")
+        
+        clean()
         print("Proszę nie podawaj zbyt dużych wartości.")
         print("Podaj wielkość mapy OSOBNO ORAZ KOLEJNO poziomo i pionowo")
         mapSizeX = input()
@@ -21,7 +31,7 @@ def setup():
 
     value = True
     while value:
-        os.system("cls")
+        clean()
         print("Podaj ilość jednostek na gracza (1-5)")
         #playerCount = #input()
         armySize = input()
@@ -47,7 +57,7 @@ def setup():
         selects.append(i)
 
     while value:
-        os.system("cls")
+        clean()
         if (changeTo == -1):
             if (lastKey == "up"): # strzałka w górę
                 curOption -= 1
