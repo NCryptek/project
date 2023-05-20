@@ -1,3 +1,6 @@
+import textRenderer
+
+defaultRenderer = textRenderer.TextRenderer(0, 0)
 mapSizeX = 0
 mapSizeY = 0
 

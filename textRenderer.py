@@ -175,6 +175,10 @@ class TextRenderer:
         resetCursorPos()
         self.Print()
 
+    def ClearBuffers(self):
+        self.textBfr = [' '] * (self.sizeX * self.sizeY)
+        self.colorBfr = [0] * (self.sizeX * self.sizeY)
+
     def ClearScreen(self):
         self.textBfr = [' '] * (self.sizeX * self.sizeY)
         self.colorBfr = [0] * (self.sizeX * self.sizeY)
