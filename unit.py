@@ -125,6 +125,49 @@ class Unit:
             activeTiles.append(possibleTiles.pop(0))
         #endwhile
         return []
+    
+    def pathToLimited(self, x, y):
+        if (not globals.IsFreeFor(self, x, y)):
+            return []
+        #endif
+        
+        possibleTiles = []
+        activeTiles = []
+        for i in range(globals.mapSizeY * globals.mapSizeX):
+            activeTiles.append(None)
+        #endfor
+
+        possibleTiles.append(PathTile(self.posX, self.posY, 0, None)) #pole startowe
+        while (len(possibleTiles) > 0):
+            curTile = possibleTiles[0] #odwołanie do pierwszego elementu
+            if (curTile.srcX == x and curTile.srcY == y): #jeśli jesteśmy u celu
+                result = []
+                while (curTile.parent != None): #spisywanie ścieżki
+                    result.append(curTile)
+                    curTile = curTile.parent
+                #endwhile
+                result.reverse()
+                return result
+            #endif
+            if (curTile.cost < self.moveRem):
+                for i in range(4): #sprawdza wszystkie sąsiednie pola
+                    offX = curTile.srcX + surround[i * 2]
+                    offY = curTile.srcY + surround[i * 2 + 1]
+                    if (globals.IsFreeFor(self, offX, offY)): #czy pole jest puste
+                        temp = activeTiles[offY * globals.mapSizeX + offX] #zapisanie odwołania do sąsiedniego pola
+                        if (temp == None):
+                            activeTiles[offY * globals.mapSizeX + offX] = PathTile(offX, offY, curTile.cost + 1, curTile)
+                            possibleTiles.append(activeTiles[offY * globals.mapSizeX + offX])
+                        elif (temp.cost > curTile.cost + 1):
+                            temp.cost = curTile.cost + 1
+                            temp.parent = curTile
+                        #endif
+                    #endif
+                #endfor
+            #endif
+            activeTiles.append(possibleTiles.pop(0))
+        #endwhile
+        return []
 
 class UnitTemplate:
     def __init__(self, name, id, hp, dmg, rng, spd, dT, aT):

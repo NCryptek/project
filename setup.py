@@ -1,10 +1,17 @@
 import globals
-import os
 import unit
+from game import StartGame
 import keyboard
-from  colorama import Fore 
+import random
 from time import sleep
 import textRenderer
+
+def setup():
+    MapSize()
+    PlayerCount()
+    BuildUnits()
+    StartGame()
+#enddef setup
 
 def MapSize():
     value = True
@@ -20,6 +27,20 @@ def MapSize():
         except:
             continue
         value = False
+    
+    globals.tileList = [None] * (globals.mapSizeX * globals.mapSizeY)
+
+    globals.startPositions.append([1, 1])
+    globals.startPositions.append([3, 1]) # 1 2
+    globals.startPositions.append([2, 2]) #  3
+    globals.startPositions.append([1, 3]) # 4 5
+    globals.startPositions.append([3, 3])
+
+    globals.startPositions.append([globals.mapSizeX - 2, globals.mapSizeY - 2])
+    globals.startPositions.append([globals.mapSizeX - 4, globals.mapSizeY - 2])
+    globals.startPositions.append([globals.mapSizeX - 3, globals.mapSizeY - 3])
+    globals.startPositions.append([globals.mapSizeX - 2, globals.mapSizeY - 4])
+    globals.startPositions.append([globals.mapSizeX - 4, globals.mapSizeY - 4])
 
 def PlayerCount():
     value = True
@@ -94,8 +115,8 @@ def BuildUnits():
                 else:
                     globals.defaultRenderer.FillColor(textRenderer.YELLOW << 4, 6, curOption, 6 + longestName, curOption)
                     changeTo = selects[curOption]
-                    for template in globals.unitTemplates:
-                        globals.defaultRenderer.InsertText(f"     {template.displayName}", longestName + 6, i)
+                    for i in range(len(globals.unitTemplates)):
+                        globals.defaultRenderer.InsertText(f"     {globals.unitTemplates[i].displayName}", longestName + 6, i)
                     globals.defaultRenderer.InsertText("  ----->  ", 18, 9)
                     globals.defaultRenderer.InsertTextSpecial("Życie:\nAtak:\nZasięg:\nRuchy:\nTyp broni:\nTyp pancerza:", 28, 9, 44, 14)
             
@@ -155,9 +176,13 @@ def BuildUnits():
     #endwhile
 
     for i in selects:
-        globals.unitList.append(unit.Unit())
+        globals.unitList.append(unit.Unit(globals.startPositions[i][0], globals.startPositions[i][1], globals.unitTemplates[i], 0))
+
+    for i in range(globals.startUnitAmt):
+        globals.unitList.append(unit.Unit(globals.startPositions[5 + i][0], globals.startPositions[5 + i][1], globals.unitTemplates[random.randint(0, len(globals.unitTemplates))], 1))
 #enddef BuildUnits
 
+"""
 def printWhite(data):
     print(Fore.WHITE,data,end="",sep="")
 
@@ -198,50 +223,4 @@ def printScreen():
         print()
         if(i < globals.mapSizeY-1): printWhite(corners["mediumLeft"]+verticalMid+corners["mediumRight"]+"\n")
     printWhite(corners["bottomLeft"]+verticalDown+corners["bottomRight"]+"\n")
-
-def setup():
-    MapSize()
-    PlayerCount()
-    BuildUnits()
-#enddef setup
-    
-"""
-def printMap():
-    os.system('clear')
-    corners = {
-               "upperLeft":     "┌",    #218 np. chr(218)
-               "upperRight":    "┐",    #191
-               "mediumLeft":    "├",    #195 
-               "mediumRight":   "┤",    #180
-               "bottomLeft":    "└",    #192
-               "bottomRight":   "┘",    #217
-               "upperMid":      "┬",    #194
-               "midiumMid":     "┼",    #197
-               "bottomMid":     "┴"     #193
-              }
-    lines =   {
-               "vertical": "│",         #179
-               "horizontal": "─"        #196
-              }
-    
-    
-
-    verticalLine = [lines["horizontal"]*3]*globals.mapSizeX        
-    verticalUp = corners["upperMid"].join(verticalLine)
-    verticalMid = corners["midiumMid"].join(verticalLine)
-    verticalDown = corners["bottomMid"].join(verticalLine)
-
-   
-    print(corners["upperLeft"]+verticalUp+corners["upperRight"])
-    for i in range(globals.mapSizeY-1):
-        for j in range(globals.mapSizeX):
-            print(lines["vertical"], end="")  
-            print("   ", end="")
-        print(lines["vertical"]) 
-        if(i < globals.mapSizeX-1): print(corners["mediumLeft"]+verticalMid+corners["mediumRight"])
-    for j in range(globals.mapSizeX):
-        print(lines["vertical"], end="")  
-        print("   ", end="")
-    print(lines["vertical"]) 
-    print(corners["bottomLeft"]+verticalDown+corners["bottomRight"])
 """

@@ -1,8 +1,15 @@
 import textRenderer
 
+gameState = 0
+gameRunning = False
+
 defaultRenderer = textRenderer.TextRenderer(0, 0)
 mapSizeX = 0
 mapSizeY = 0
+camOffsetX = 0
+camOffsetY = 0
+camSizeX = 10
+camSizeY = 10
 
 startUnitAmt = 0
 playerAmt = 0
@@ -10,6 +17,7 @@ playerAmt = 0
 tileList = []
 unitList = []
 unitTemplates = []
+startPositions = []
 
 currentPlayer = 0
 currentUnit = None

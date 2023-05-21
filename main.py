@@ -1,4 +1,6 @@
-import start
+import setup
+from colorama import just_fix_windows_console
 if (__name__ == "__main__"):
-    start.main()
+    just_fix_windows_console()
+    setup.setup()
     
