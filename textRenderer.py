@@ -83,8 +83,8 @@ class TextRenderer:
         setCursorPos(newX, newY)
 
     def FillChar(self, char, x1, y1, x2, y2):
-        for y in range(y1, y2):
-            for x in range(x1, x2):
+        for y in range(y1, y2 + 1):
+            for x in range(x1, x2 + 1):
                 self.textBfr[y * self.sizeX + x] = char
 
     def FillCharAll(self, char):
@@ -101,12 +101,16 @@ class TextRenderer:
 
     def InsertTextSpecial(self, text, x1, y1, x2, y2, wrapText = False):
         textInd = 0
+        textLen = len(text)
         for y in range(y1, y2 + 1):
             for x in range(x1, x2 + 1):
-                if (text[textInd] == "\n"):
+                if (textInd >= textLen): #zakończ działanie funkcji jeśli tekst się skończył
+                    return
+                
+                if (text[textInd] == "\n"): #przejście do następnej linii jeśli jest znak \n
                     textInd += 1
                     break
-                elif (text[textInd] == "\0"):
+                elif (text[textInd] == "\0"): #zakończenie wpisywania tekstu jeśli jest znak \0
                     return
                 else:
                     self.textBfr[y * self.sizeX + x] = text[textInd]
@@ -122,8 +126,8 @@ class TextRenderer:
     #enddef InsertTextSpecial
 
     def FillColor(self, color, x1, y1, x2, y2):
-        for y in range(y1, y2):
-            for x in range(x1, x2):
+        for y in range(y1, y2 + 1):
+            for x in range(x1, x2 + 1):
                 self.colorBfr[y * self.sizeX + x] = color
 
     def FillColorAll(self, color):
@@ -182,10 +186,9 @@ class TextRenderer:
                 if (self.colorBfr[y * self.sizeX + x] != curColor):
                     curColor = self.colorBfr[y * self.sizeX + x]
                     temp += GetColorCodeFromNum(curColor)
-                    print("zmiana koloru")
                 temp += self.textBfr[y * self.sizeX + x]
             #temp = temp.join(self.textBfr[y * self.sizeX:(y + 1) * self.sizeX:])
-            print(temp, "\033[49m", end="\n")
+            print(temp, "\033[49m", end="\n", sep="")
             temp = ""
         self.cursorX = 0
         self.cursorY += self.sizeY
@@ -194,7 +197,7 @@ class TextRenderer:
     def Overwrite(self):
         self.cursorX = 0
         self.cursorY = 0
-        resetCursorPos()
+        print("\033[0;0H", end="")
         self.Print()
 
     def ClearBuffers(self):
@@ -210,8 +213,8 @@ class TextRenderer:
 
 if (__name__ == "__main__"):
     just_fix_windows_console()
-    testRenderer = TextRenderer(39, 19)
-    testRenderer.GenGrid(-1, -1, 40, 20, 3, 1)
+    testRenderer = TextRenderer(41, 21)
+    testRenderer.GenGrid(0, 0, 41, 21, 3, 1)
     #testRenderer.FillCharAll("a")
     #testRenderer.InsertText("Hello World!", 2, 0)
     testRenderer.FillColorAll(GetColorNum(RED, GREEN))

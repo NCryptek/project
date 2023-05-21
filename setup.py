@@ -8,8 +8,8 @@ import textRenderer
 
 def MapSize():
     value = True
-    textRenderer.clearScreen()
     while value:
+        textRenderer.clearScreen()
         print("Proszę nie podawaj zbyt dużych wartości.")
         print("Podaj wielkość mapy OSOBNO ORAZ KOLEJNO poziomo i pionowo")
         mapSizeX = input()
@@ -23,8 +23,8 @@ def MapSize():
 
 def PlayerCount():
     value = True
-    textRenderer.clearScreen()
     while value:
+        textRenderer.clearScreen()
         print("Podaj ilość jednostek na gracza (1-5)")
         #playerCount = #input()
         armySize = input()
@@ -38,6 +38,125 @@ def PlayerCount():
         if (int(armySize)<1 or int(armySize)>5):
             continue
         value = False 
+
+def BuildUnits():
+    #wymagana jest najdłuższa możliwa nazwa jednostki aby móc poprawnie stworzyć bufor,
+    #nie może być poniżej 12 żeby poprawnie wyświetlać statystyki
+    longestName = 12
+    for i in globals.unitTemplates:
+        if (longestName < len(i.displayName)):
+            longestName = len(i.displayName)
+
+    #wyczyszczenie ekranu i ustawienie rozmiaru bufora
+    textRenderer.resetCursorPos()
+    globals.defaultRenderer.ClearScreen()
+    globals.defaultRenderer.Resize(2 * longestName + 11, 15)
+    
+    #inicjalizacja stałego tekstu
+    #poszczególne jednostki
+    for i in range(globals.startUnitAmt):
+        globals.defaultRenderer.InsertText(f"  U{i + 1}: ", 0, i)
+
+    #poszczególne typy jednostek 
+    #for i in range(len(globals.unitTemplates)):
+    #    globals.defaultRenderer.InsertText(f"     {globals.unitTemplates[i].displayName}", longestName + 6, i)
+    #globals.defaultRenderer.FillColor(textRenderer.BLACK << 4, longestName + 6, 0, 2 * longestName + 11, len(globals.unitTemplates))
+
+    globals.defaultRenderer.InsertText("  Zatwierdź", 0, 7)
+
+    #statystyki obecnie wyświetlanej jednostki
+    globals.defaultRenderer.InsertTextSpecial("Życie:\nAtak:\nZasięg:\nRuchy:\nTyp broni:\nTyp pancerza:", 2, 9, 18, 14)
+
+    #wypisanie do testu!
+    #globals.defaultRenderer.Print()
+
+    #wstrzymanie do testu!
+    #input()
+
+    selects = []
+    curOption = 0
+    changeTo = -1
+    lastKey = ""
+    for i in range(globals.startUnitAmt):
+        selects.append(i)
+
+    while True:
+        if (changeTo == -1): #wybieranie jednostki do zmiany
+            #obsługa klawiszy
+            if (lastKey == "up"): #strzałka w górę
+                curOption -= 1
+            elif (lastKey == "down"): #strzałka w dół
+                curOption += 1
+            elif (lastKey == "enter"):
+                if (curOption == globals.startUnitAmt):
+                    globals.defaultRenderer.ClearBuffers()
+                    break
+                else:
+                    globals.defaultRenderer.FillColor(textRenderer.YELLOW << 4, 6, curOption, 6 + longestName, curOption)
+                    changeTo = selects[curOption]
+                    for template in globals.unitTemplates:
+                        globals.defaultRenderer.InsertText(f"     {template.displayName}", longestName + 6, i)
+                    globals.defaultRenderer.InsertText("  ----->  ", 18, 9)
+                    globals.defaultRenderer.InsertTextSpecial("Życie:\nAtak:\nZasięg:\nRuchy:\nTyp broni:\nTyp pancerza:", 28, 9, 44, 14)
+            
+            #naprawienie wybranej opcji
+            if (curOption < 0):
+                curOption = globals.startUnitAmt
+            elif (curOption > globals.startUnitAmt):
+                curOption = 0
+            
+            #render
+            globals.defaultRenderer.FillChar(" ", 0, 0, 1, 7)
+            if (curOption == globals.startUnitAmt):
+                globals.defaultRenderer.FillChar(">", 0, 7, 0, 7)
+            else:
+                globals.defaultRenderer.FillChar(">", 0, curOption, 0, curOption)
+
+            globals.defaultRenderer.FillChar(" ", 6, 0, 6 + longestName, globals.startUnitAmt)
+            for i in range(globals.startUnitAmt):
+                globals.defaultRenderer.InsertText(globals.unitTemplates[selects[i]].displayName, 6, i)
+            
+            #statystyki bieżącej jednostki
+            if (curOption < globals.startUnitAmt):
+                templateRef = globals.unitTemplates[selects[curOption]]
+                globals.defaultRenderer.InsertTextSpecial(f"{templateRef.maxHealth}\n{templateRef.damage}\n{templateRef.range}\n{templateRef.speed}\n{unit.warheads[templateRef.damageType]}\n{unit.armors[templateRef.armorType]}", 16, 9, 18, 14)
+
+        else: #wybieranie typu jednostki na który zmienić
+            #obsługa klawiszy
+            if (lastKey == "up"): #strzałka w górę
+                changeTo -= 1
+            elif (lastKey == "down"): #strzałka w dół
+                changeTo += 1
+            elif (lastKey == "enter"):
+                globals.defaultRenderer.FillColor(textRenderer.RESETCOLOR << 4, 6, curOption, 6 + longestName, curOption)
+                globals.defaultRenderer.FillChar(" ", longestName + 6, 0, 2 * longestName + 11, len(globals.unitTemplates))
+                globals.defaultRenderer.FillChar(" ", 18, 9, 44, 14)
+                selects[curOption] = changeTo
+                changeTo = -1
+            
+            #naprawienie wybranej opcji
+            if (curOption < 0):
+                changeTo = len(globals.unitTemplates)
+            elif (curOption >= len(globals.unitTemplates)):
+                changeTo = 0
+            #render
+            templateRef = globals.unitTemplates[changeTo]
+            if (changeTo != -1): #w przeciwnym razie wkleja tekst w miejscu gdzie go nie powinno być po wybraniu typu
+                globals.defaultRenderer.FillChar(" ", 6 + longestName, 0, 10 + longestName, len(globals.unitTemplates))
+                globals.defaultRenderer.InsertTextSpecial(f"{templateRef.maxHealth}\n{templateRef.damage}\n{templateRef.range}\n{templateRef.speed}\n{unit.warheads[templateRef.damageType]}\n{unit.armors[templateRef.armorType]}", 42, 9, 44, 14)
+                globals.defaultRenderer.InsertText("-->", 7 + longestName, changeTo)
+        #endif
+        globals.defaultRenderer.Overwrite()
+        if (lastKey != "enter"):
+            lastKey = keyboard.read_key()
+        else:
+            lastKey = ""
+        sleep(0.1)
+    #endwhile
+
+    for i in selects:
+        globals.unitList.append(unit.Unit())
+#enddef BuildUnits
 
 def printWhite(data):
     print(Fore.WHITE,data,end="",sep="")
@@ -83,56 +202,7 @@ def printScreen():
 def setup():
     MapSize()
     PlayerCount()
-
-    longestName = 0
-    for i in globals.unitTemplates:
-        if (longestName < len(i.displayName)):
-            longestName = len(i.displayName)
-
-    globals.defaultRenderer.Resize()
-
-    selects = []
-    curOption = 0
-    changeTo = -1
-    lastKey = ""
-    for i in range(globals.startUnitAmt):
-        selects.append(i)
-
-    textRenderer.clearScreen()
-    while True:
-        textRenderer.resetCursorPos()
-        if (changeTo == -1):
-            if (lastKey == "up"): # strzałka w górę
-                curOption -= 1
-            elif (lastKey == "down"):
-                curOption += 1
-            elif (lastKey == "enter"):
-                if (curOption == globals.startUnitAmt):
-                    break
-            lastKey = ""
-
-            if (curOption < 0):
-                curOption = globals.startUnitAmt
-            elif (curOption > globals.startUnitAmt):
-                curOption = 0
-
-            for i in range(globals.startUnitAmt):
-                if (curOption == i):
-                    print("> ", end="", sep="")
-                else:
-                    print("  ", end="", sep="")
-                print(f"U-{i + 1}: {globals.unitTemplates[selects[i]].displayName}")
-            
-            if (curOption == globals.startUnitAmt):
-                print("\n> Kontynuuj")
-            else:
-                print("\n  Kontynuuj")
-        elif (True):
-            pass
-        #endif
-        lastKey = keyboard.read_key()
-        sleep(0.1)
-    #endwhile
+    BuildUnits()
 #enddef setup
     
 """

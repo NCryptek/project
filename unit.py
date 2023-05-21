@@ -7,6 +7,17 @@ surround = [ #pozycje sąsiednich kratek
     -1,  0  #zachód
 ]
 
+warheads = [
+    "SA",
+    "AT",
+    "HE"
+]
+
+armors = [
+    "LK",
+    "CK"
+]
+
 class PathTile:
     def __init__(self, x, y, cost, parent):
         self.srcX = x
@@ -32,6 +43,7 @@ class Unit:
             self.moveRem = template.speed
             self.damageType = template.damageType
             self.armorType = template.armorType
+            globals.tileList[self.posY * globals.mapSizeX + self.posX] = self
         
     def takeDamage(self, dmg, dT):
         if (self.armorType == 0): #Light
