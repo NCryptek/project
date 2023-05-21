@@ -99,6 +99,28 @@ class TextRenderer:
         for i in range(textLen):
             self.textBfr[startInd + i] = text[i]
 
+    def InsertTextSpecial(self, text, x1, y1, x2, y2, wrapText = False):
+        textInd = 0
+        for y in range(y1, y2 + 1):
+            for x in range(x1, x2 + 1):
+                if (text[textInd] == "\n"):
+                    textInd += 1
+                    break
+                elif (text[textInd] == "\0"):
+                    return
+                else:
+                    self.textBfr[y * self.sizeX + x] = text[textInd]
+                    textInd += 1
+                    if (x == x2 and (not wrapText)):
+                        while (text[textInd] != "\n" and text[textInd] != "\0"):
+                            textInd += 1
+                        #endwhile
+                    #endif
+                #endif
+            #endfor
+        #endfor
+    #enddef InsertTextSpecial
+
     def FillColor(self, color, x1, y1, x2, y2):
         for y in range(y1, y2):
             for x in range(x1, x2):
