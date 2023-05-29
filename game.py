@@ -93,11 +93,18 @@ def QuitPrompt():
 
 def RenderMap():
     globals.defaultRenderer.GenGrid(0, 0, globals.camSizeX * 4 + 1, globals.camSizeY * 2 + 1, 3, 1)
+    globals.defaultRenderer.FillChar()
     for i in globals.unitList:
         if (i.health == 0):
             continue
+        elif (i.posX < globals.camOffsetX or i.posX >= globals.camOffsetX + globals.camSizeX):
+            continue
+        elif (i.posY < globals.camOffsetY or i.posY >= globals.camOffsetY + globals.camSizeY):
+            continue
+
+        globals.defaultRenderer.SetChar("O", (i.posX - globals.camOffsetY) * 4 + 2, (i.posY - globals.camOffsetY) * 2 + 1)
+        globals.defaultRenderer.SetColor(textRenderer.GREEN << 4, (i.posX - globals.camOffsetY) * 4 + 2, (i.posY - globals.camOffsetY) * 2 + 1)
         
-    
 
     globals.defaultRenderer.Overwrite()
 

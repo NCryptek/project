@@ -83,6 +83,9 @@ class TextRenderer:
         self.cursorY = newY
         setCursorPos(newX, newY)
 
+    def SetChar(self, char, x, y):
+        self.textBfr[y * self.sizeX + x] = char
+
     def FillChar(self, char, x1, y1, x2, y2):
         for y in range(y1, y2 + 1):
             for x in range(x1, x2 + 1):
@@ -125,6 +128,9 @@ class TextRenderer:
             #endfor
         #endfor
     #enddef InsertTextSpecial
+
+    def SetColor(self, color, x, y):
+        self.colorBfr[y * self.sizeX + x] = color
 
     def FillColor(self, color, x1, y1, x2, y2):
         for y in range(y1, y2 + 1):
