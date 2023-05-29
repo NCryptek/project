@@ -14,6 +14,9 @@ camSizeY = 10
 startUnitAmt = 0
 playerAmt = 0
 
+CursorX = 0
+CursorY = 0
+
 tileList = []
 unitList = []
 unitTemplates = []

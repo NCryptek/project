@@ -6,6 +6,7 @@ import keyboard
 import random
 import colorama
 
+
 def StartGame():
     textRenderer.clearScreen()
     globals.defaultRenderer.Resize(globals.camSizeX * 4 + 1, globals.camSizeY * 2 + 1)
@@ -47,6 +48,7 @@ def KeyHandler_Basic(key):
         handled = True
         pass
     elif (key == "m"):
+        globals.gameState = 2
         handled = True
         pass
     elif (key == "a"):
@@ -74,7 +76,30 @@ def KeyHandler_Basic(key):
     return handled
 
 def KeyHandler_Move(key):
-    pass
+    handled = False
+    if (key == "esc"):
+        pass
+    elif(key == "up"):
+        if (globals.CursorY < globals.mapSizeY):
+            globals.CursorY +=1
+            handled = True
+    elif(key == "down"):
+        if (globals.CursorY > 0):
+            globals.CursorY-=1
+            handled = True
+    elif(key == "right"):
+        if (globals.CursorX < globals.mapSizeX):
+            globals.CursorX +=1
+            handled = True
+    elif(key == "left"):
+        if (globals.CursorX > 0):
+            globals.CursorX -=1
+            handled = True
+    print("ty")
+    print(globals.CursorX, globals.CursorY)
+    print(key)
+    return handled
+    
 
 def KeyHandler_Attack(key):
     pass
@@ -93,7 +118,6 @@ def QuitPrompt():
 
 def RenderMap():
     globals.defaultRenderer.GenGrid(0, 0, globals.camSizeX * 4 + 1, globals.camSizeY * 2 + 1, 3, 1)
-    globals.defaultRenderer.FillChar()
     for i in globals.unitList:
         if (i.health == 0):
             continue
