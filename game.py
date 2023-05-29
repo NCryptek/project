@@ -6,11 +6,30 @@ import keyboard
 import random
 import colorama
 
+prevPosX = []
+prevPosY = []
+curSelect = 0
+curX = 0
+curY = 0
+
+def CenterCam(unit):
+    globals.camOffsetX = max(0, min(unit.posX - (globals.camSizeX / 2), globals.mapSizeX - globals.camSizeX - 1))
+    globals.camOffsetY = max(0, min(unit.posY - (globals.camSizeY / 2), globals.mapSizeX - globals.camSizeX - 1))
+
 def StartGame():
     textRenderer.clearScreen()
     globals.defaultRenderer.Resize(globals.camSizeX * 4 + 1, globals.camSizeY * 2 + 1)
+
+    curX = 0
+    curY = 0
+    curSelect = 0
+    for i in globals.unitList:
+        prevPosX.append(i.posX)
+        prevPosY.append(i.posY)
+
     globals.gameState = 1
     globals.gameRunning = True
+    
     GameLoop()
 
 def GameLoop():
@@ -34,10 +53,15 @@ def GameLoop():
             lastKey = newKey
         sleep(0.016)
 
-def EnemyTurn():
-    pass
+def EndTurn():
+    for i in globals.unitList:
+        i.moveRem = i.speed
+
+        prevPosX.append(i.posX)
+        prevPosY.append(i.posY)
 
 def KeyHandler_Basic(key):
+    global curX, curY, curSelect
     handled = False
     if (key == "esc"):
         if (globals.gameState != 1):
@@ -47,59 +71,88 @@ def KeyHandler_Basic(key):
         handled = True
         pass
     elif (key == "e"):
-        EnemyTurn()
+        EndTurn()
+        globals.gameState = 1
         handled = True
         pass
     elif (key == "m"):
+        curX = globals.unitList[curSelect].posX
+        curY = globals.unitList[curSelect].posY
         globals.gameState = 2
         handled = True
         pass
     elif (key == "a"):
+        globals.gameState = 3
         handled = True
         pass
     elif (key == "c"):
         globals.gameState = 4
         handled = True
         pass
-    elif (key == "1"):
-        handled = True
-        pass
-    elif (key == "2"):
-        handled = True
-        pass
-    elif (key == "3"):
-        handled = True
-        pass
-    elif (key == "4"):
-        handled = True
-        pass
-    elif (key == "5"):
-        handled = True
-        pass
-
     return handled
 
 def KeyHandler_Move(key):
     handled = False
-    if(key == "up"):
-        if (globals.CursorY > 0):
-            globals.CursorY -= 1
+    global curX, curY, curSelect
+    if (key == "up"):
+        if (curY > 0):
+            curY -= 1
         handled = True
     elif(key == "down"):
-        if (globals.CursorY < globals.mapSizeY):
-            globals.CursorY += 1
+        if (curY < globals.mapSizeY):
+            curY += 1
         handled = True
     elif(key == "right"):
-        if (globals.CursorX < globals.mapSizeX):
-            globals.CursorX += 1
+        if (curX < globals.mapSizeX):
+            curX += 1
         handled = True
     elif(key == "left"):
-        if (globals.CursorX > 0):
-            globals.CursorX -= 1
+        if (curX > 0):
+            curX -= 1
         handled = True
+    elif (key == "1"):
+        if (globals.unitList[0].health > 0):
+            CenterCam(globals.unitList[0])
+            curX = globals.unitList[0].posX
+            curY = globals.unitList[0].posY
+            curSelect = 0
+        handled = True
+        pass
+    elif (key == "2"):
+        if (globals.unitList[1].health > 0):
+            CenterCam(globals.unitList[1])
+            curX = globals.unitList[1].posX
+            curY = globals.unitList[1].posY
+            curSelect = 1
+        handled = True
+        pass
+    elif (key == "3"):
+        if (globals.unitList[2].health > 0):
+            CenterCam(globals.unitList[2])
+            curX = globals.unitList[2].posX
+            curY = globals.unitList[2].posY
+            curSelect = 2
+        handled = True
+        pass
+    elif (key == "4"):
+        if (globals.unitList[3].health > 0):
+            CenterCam(globals.unitList[3])
+            curX = globals.unitList[3].posX
+            curY = globals.unitList[3].posY
+            curSelect = 3
+        handled = True
+        pass
+    elif (key == "5"):
+        if (globals.unitList[4].health > 0):
+            CenterCam(globals.unitList[4])
+            curX = globals.unitList[4].posX
+            curY = globals.unitList[4].posY
+            curSelect = 4
+        handled = True
+    elif (key == "enter"):
+        pass
     
     return handled
-    
 
 def KeyHandler_Attack(key):
     pass
@@ -115,12 +168,36 @@ def KeyHandler_Camera(key):
             globals.camOffsetY -= 1
         handled = True
     elif (key == "right"):
-        if (globals.camOffsetX + globals.camSizeX < globals.mapSizeX - 1):
+        if (globals.camOffsetX + globals.camSizeX < globals.mapSizeX):
             globals.camOffsetX += 1
         handled = True
     elif (key == "down"):
-        if (globals.camOffsetY + globals.camSizeY < globals.mapSizeY - 1):
+        if (globals.camOffsetY + globals.camSizeY < globals.mapSizeY):
             globals.camOffsetY += 1
+        handled = True
+    elif (key == "1"):
+        if (globals.unitList[0].health > 0):
+            CenterCam(globals.unitList[0])
+        handled = True
+        pass
+    elif (key == "2"):
+        if (globals.unitList[1].health > 0):
+            CenterCam(globals.unitList[1])
+        handled = True
+        pass
+    elif (key == "3"):
+        if (globals.unitList[2].health > 0):
+            CenterCam(globals.unitList[2])
+        handled = True
+        pass
+    elif (key == "4"):
+        if (globals.unitList[3].health > 0):
+            CenterCam(globals.unitList[3])
+        handled = True
+        pass
+    elif (key == "5"):
+        if (globals.unitList[4].health > 0):
+            CenterCam(globals.unitList[4])
         handled = True
     
     return handled
@@ -129,23 +206,27 @@ def QuitPrompt():
     textRenderer.clearScreen()
     print("\033[1m")
     print(textRenderer.GetColorCode(textRenderer.RED, textRenderer.RESETCOLOR), "Czy napewno chcesz wyjść? Naciśnij enter aby potwierdzić, inny klawisz spowoduje powrót do gry", sep="")
+    sleep(0.25)
     key = keyboard.read_key()
     if (key == "enter"):
         globals.gameRunning = False
     textRenderer.clearScreen()
 
 def RenderMap():
+    global curX, curY, curSelect
     rightmost = globals.camSizeX * 4 + 1
     downmost = globals.camSizeY * 2 + 1
 
+    globals.defaultRenderer.ClearBuffers()
+    globals.defaultRenderer.FillColorAll(0)
     globals.defaultRenderer.GenGrid(0, 0, rightmost, downmost, 3, 1)
     if (globals.camOffsetY > 0):
         globals.defaultRenderer.FillChar("↑", 0, 0, rightmost, 0)
 
-    if (globals.camOffsetX + globals.camSizeX < globals.mapSizeX - 1):
+    if (globals.camOffsetX + globals.camSizeX < globals.mapSizeX):
         globals.defaultRenderer.FillChar("→", rightmost - 1, 0, rightmost - 1, downmost - 2)
 
-    if (globals.camOffsetY + globals.camSizeY < globals.mapSizeY - 1):
+    if (globals.camOffsetY + globals.camSizeY < globals.mapSizeY):
         globals.defaultRenderer.FillChar("↓", 0, downmost - 1, rightmost - 2, downmost - 1)
 
     if (globals.camOffsetX > 0):
@@ -164,6 +245,12 @@ def RenderMap():
             globals.defaultRenderer.SetColor(textRenderer.GREEN << 4, (i.posX - globals.camOffsetX) * 4 + 2, (i.posY - globals.camOffsetY) * 2 + 1)
         else:
             globals.defaultRenderer.SetColor(textRenderer.RED << 4, (i.posX - globals.camOffsetX) * 4 + 2, (i.posY - globals.camOffsetY) * 2 + 1)
+
+    if (globals.gameState == 2):
+        renderCursorX = (curX - globals.camOffsetX) * 4 + 2
+        renderCursorY = (curY - globals.camOffsetY) * 2 + 1
+        globals.defaultRenderer.SetChar("V", renderCursorX, renderCursorY)
+        globals.defaultRenderer.SetColor((textRenderer.GREEN << 4) + textRenderer.BLUE, renderCursorX, renderCursorY)
 
     globals.defaultRenderer.Overwrite()
 
