@@ -1,5 +1,6 @@
 from colorama import just_fix_windows_console
 import os
+from sys import platform
 
 RESETCOLOR = 0
 BLACK = 1
@@ -51,10 +52,10 @@ def GetColorNum(foreground, background):
     return (foreground << 4) + background
 
 def clearScreen():
-    try: 
-        os.system("cls")
-    except:
+    if platform == "linux" or platform == "linux2":
         os.system("clear")
+    elif platform == "win32":
+        os.system("cls")
 
 def setCursorPos(x, y):
     print(f"\033[{y};{x}H", end="")
