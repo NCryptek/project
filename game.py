@@ -6,9 +6,6 @@ import keyboard
 import random
 import colorama
 
-cursorX = 0
-cursorY = 0
-
 def StartGame():
     textRenderer.clearScreen()
     globals.defaultRenderer.Resize(globals.camSizeX * 4 + 1, globals.camSizeY * 2 + 1)
@@ -31,7 +28,7 @@ def GameLoop():
 
         RenderMap()
         lastKey = keyboard.read_key()
-        sleep(0.1)
+        sleep(0.3)
 
 def EnemyTurn():
     pass
@@ -98,9 +95,7 @@ def KeyHandler_Move(key):
         if (globals.CursorX > 0):
             globals.CursorX -=1
             handled = True
-    print("ty")
-    print(globals.CursorX, globals.CursorY)
-    print(key)
+
     return handled
     
 
