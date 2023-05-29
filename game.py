@@ -30,8 +30,12 @@ def GameLoop():
             break
 
         RenderMap()
-        lastKey = keyboard.read_key()
-        sleep(0.1)
+        newKey = keyboard.read_key()
+        if (newKey == lastKey):
+            lastKey = ""
+        else:
+            lastKey = newKey
+        sleep(0.016)
 
 def EnemyTurn():
     pass
@@ -80,24 +84,22 @@ def KeyHandler_Basic(key):
 
 def KeyHandler_Move(key):
     handled = False
-    if (key == "esc"):
-        pass
-    elif(key == "up"):
-        if (globals.CursorY < globals.mapSizeY):
-            globals.CursorY +=1
-            handled = True
-    elif(key == "down"):
+    if(key == "up"):
         if (globals.CursorY > 0):
-            globals.CursorY-=1
-            handled = True
+            globals.CursorY -= 1
+        handled = True
+    elif(key == "down"):
+        if (globals.CursorY < globals.mapSizeY):
+            globals.CursorY += 1
+        handled = True
     elif(key == "right"):
         if (globals.CursorX < globals.mapSizeX):
-            globals.CursorX +=1
-            handled = True
+            globals.CursorX += 1
+        handled = True
     elif(key == "left"):
         if (globals.CursorX > 0):
-            globals.CursorX -=1
-            handled = True
+            globals.CursorX -= 1
+        handled = True
     print("ty")
     print(globals.CursorX, globals.CursorY)
     print(key)
