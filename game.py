@@ -50,6 +50,7 @@ def KeyHandler_Basic(key):
         handled = True
         pass
     elif (key == "m"):
+        globals.gameState = 2
         handled = True
         pass
     elif (key == "a"):
@@ -78,7 +79,30 @@ def KeyHandler_Basic(key):
     return handled
 
 def KeyHandler_Move(key):
-    pass
+    handled = False
+    if (key == "esc"):
+        pass
+    elif(key == "up"):
+        if (globals.CursorY < globals.mapSizeY):
+            globals.CursorY +=1
+            handled = True
+    elif(key == "down"):
+        if (globals.CursorY > 0):
+            globals.CursorY-=1
+            handled = True
+    elif(key == "right"):
+        if (globals.CursorX < globals.mapSizeX):
+            globals.CursorX +=1
+            handled = True
+    elif(key == "left"):
+        if (globals.CursorX > 0):
+            globals.CursorX -=1
+            handled = True
+    print("ty")
+    print(globals.CursorX, globals.CursorY)
+    print(key)
+    return handled
+    
 
 def KeyHandler_Attack(key):
     pass
