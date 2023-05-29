@@ -60,6 +60,8 @@ class Unit:
                 self.health -= dmg
             elif (dT == 2): #HE
                 self.health -= (dmg * 0.75)
+        if (self.health < 0):
+            self.health = 0
         
     def setPos(self, x, y):
         globals.tileList[self.posY * globals.mapSizeX + self.posX] = None

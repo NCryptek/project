@@ -23,7 +23,7 @@ def GameLoop():
                 KeyHandler_Attack(lastKey)
             elif (globals.gameState == 4):  #ruch kamerą
                 KeyHandler_Camera(lastKey)
-        elif (not globals.gameRunning):
+        elif (not globals.gameRunning): # jeśli klawisz został obsłużony przez podstawową funkcję i spowodował on zakończenie gry
             break
 
         RenderMap()
@@ -93,6 +93,11 @@ def QuitPrompt():
 
 def RenderMap():
     globals.defaultRenderer.GenGrid(0, 0, globals.camSizeX * 4 + 1, globals.camSizeY * 2 + 1, 3, 1)
+    for i in globals.unitList:
+        if (i.health == 0):
+            continue
+        
+    
 
     globals.defaultRenderer.Overwrite()
 

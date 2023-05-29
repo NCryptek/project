@@ -192,7 +192,7 @@ class TextRenderer:
             temp = ""
         self.cursorX = 0
         self.cursorY += self.sizeY
-        print("\033[0m")
+        print("\033[39;49m")
 
     def Overwrite(self):
         self.cursorX = 0

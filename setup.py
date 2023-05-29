@@ -7,6 +7,7 @@ from time import sleep
 import textRenderer
 
 def setup():
+    print("\033[1m")
     MapSize()
     PlayerCount()
     BuildUnits()
@@ -157,7 +158,7 @@ def BuildUnits():
             
             #naprawienie wybranej opcji
             if (curOption < 0):
-                changeTo = len(globals.unitTemplates)
+                changeTo = len(globals.unitTemplates) - 1
             elif (curOption >= len(globals.unitTemplates)):
                 changeTo = 0
             #render
@@ -179,7 +180,7 @@ def BuildUnits():
         globals.unitList.append(unit.Unit(globals.startPositions[i][0], globals.startPositions[i][1], globals.unitTemplates[i], 0))
 
     for i in range(globals.startUnitAmt):
-        globals.unitList.append(unit.Unit(globals.startPositions[5 + i][0], globals.startPositions[5 + i][1], globals.unitTemplates[random.randint(0, len(globals.unitTemplates))], 1))
+        globals.unitList.append(unit.Unit(globals.startPositions[5 + i][0], globals.startPositions[5 + i][1], globals.unitTemplates[random.randint(0, len(globals.unitTemplates) - 1)], 1))
 #enddef BuildUnits
 
 """
