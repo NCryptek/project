@@ -19,13 +19,17 @@ def MapSize():
     while value:
         textRenderer.clearScreen()
         print("Proszę nie podawaj zbyt dużych wartości.")
-        print("Podaj wielkość mapy OSOBNO ORAZ KOLEJNO poziomo i pionowo")
+        print("Podaj wielkość mapy OSOBNO ORAZ KOLEJNO poziomo i pionowo (10-50)")
         mapSizeX = input()
         mapSizeY = input()
         try:
             globals.mapSizeX = int(mapSizeX)
             globals.mapSizeY = int(mapSizeY)
         except:
+            continue
+        if (globals.mapSizeX<10 or globals.mapSizeX>50):
+            continue
+        if (globals.mapSizeY<10 or globals.mapSizeY>50):
             continue
         value = False
     
