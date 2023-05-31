@@ -14,6 +14,8 @@ camSizeY = 10
 startUnitAmt = 0
 playerAmt = 0
 
+longestUnitName = 0
+
 tileList = []
 unitList = []
 unitTemplates = []
@@ -27,6 +29,12 @@ def Dist(x1, y1, x2, y2):
 
 def GetPathFromTo(x1, y1, x2, y2):
     return
+
+def GetUnitAt(x, y):
+    if (x < 0 or x > mapSizeX - 1 or y < 0 or y > mapSizeY - 1):
+        return None
+    
+    return tileList[y * mapSizeX + x]
 
 def IsFreeFor(unit, x, y):
     if ((x < 0 or x >= mapSizeX) or (y < 0 or y >= mapSizeY)):

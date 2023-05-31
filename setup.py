@@ -68,15 +68,15 @@ def PlayerCount():
 def BuildUnits():
     #wymagana jest najdłuższa możliwa nazwa jednostki aby móc poprawnie stworzyć bufor,
     #nie może być poniżej 12 żeby poprawnie wyświetlać statystyki
-    longestName = 12
+    globals.longestUnitName = 12
     for i in globals.unitTemplates:
-        if (longestName < len(i.displayName)):
-            longestName = len(i.displayName)
+        if (globals.longestUnitName < len(i.displayName)):
+            globals.longestUnitName = len(i.displayName)
 
     #wyczyszczenie ekranu i ustawienie rozmiaru bufora
     textRenderer.resetCursorPos()
     globals.defaultRenderer.ClearScreen()
-    globals.defaultRenderer.Resize(2 * longestName + 11, 15)
+    globals.defaultRenderer.Resize(2 * globals.longestUnitName + 11, 15)
     
     #inicjalizacja stałego tekstu
     #poszczególne jednostki
@@ -118,10 +118,10 @@ def BuildUnits():
                     globals.defaultRenderer.ClearBuffers()
                     break
                 else:
-                    globals.defaultRenderer.FillColor(textRenderer.YELLOW << 4, 6, curOption, 6 + longestName, curOption)
+                    globals.defaultRenderer.FillColor(textRenderer.YELLOW << 4, 6, curOption, 6 + globals.longestUnitName, curOption)
                     changeTo = selects[curOption]
                     for i in range(len(globals.unitTemplates)):
-                        globals.defaultRenderer.InsertText(f"     {globals.unitTemplates[i].displayName}", longestName + 6, i)
+                        globals.defaultRenderer.InsertText(f"     {globals.unitTemplates[i].displayName}", globals.longestUnitName + 6, i)
                     globals.defaultRenderer.InsertText("  ----->  ", 18, 9)
                     globals.defaultRenderer.InsertTextSpecial("Życie:\nAtak:\nZasięg:\nRuchy:\nTyp broni:\nTyp pancerza:", 28, 9, 44, 14)
             
@@ -138,7 +138,7 @@ def BuildUnits():
             else:
                 globals.defaultRenderer.FillChar(">", 0, curOption, 0, curOption)
 
-            globals.defaultRenderer.FillChar(" ", 6, 0, 6 + longestName, globals.startUnitAmt)
+            globals.defaultRenderer.FillChar(" ", 6, 0, 6 + globals.longestUnitName, globals.startUnitAmt)
             for i in range(globals.startUnitAmt):
                 globals.defaultRenderer.InsertText(globals.unitTemplates[selects[i]].displayName, 6, i)
             
@@ -154,8 +154,8 @@ def BuildUnits():
             elif (lastKey == "down"): #strzałka w dół
                 changeTo += 1
             elif (lastKey == "enter"):
-                globals.defaultRenderer.FillColor(textRenderer.RESETCOLOR << 4, 6, curOption, 6 + longestName, curOption)
-                globals.defaultRenderer.FillChar(" ", longestName + 6, 0, 2 * longestName + 11, len(globals.unitTemplates))
+                globals.defaultRenderer.FillColor(textRenderer.RESETCOLOR << 4, 6, curOption, 6 + globals.longestUnitName, curOption)
+                globals.defaultRenderer.FillChar(" ", globals.longestUnitName + 6, 0, 2 * globals.longestUnitName + 11, len(globals.unitTemplates))
                 globals.defaultRenderer.FillChar(" ", 18, 9, 44, 14)
                 selects[curOption] = changeTo
                 changeTo = -1
@@ -168,9 +168,9 @@ def BuildUnits():
             #render
             templateRef = globals.unitTemplates[changeTo]
             if (changeTo != -1): #w przeciwnym razie wkleja tekst w miejscu gdzie go nie powinno być po wybraniu typu
-                globals.defaultRenderer.FillChar(" ", 6 + longestName, 0, 10 + longestName, len(globals.unitTemplates))
+                globals.defaultRenderer.FillChar(" ", 6 + globals.longestUnitName, 0, 10 + globals.longestUnitName, len(globals.unitTemplates))
                 globals.defaultRenderer.InsertTextSpecial(f"{templateRef.maxHealth}\n{templateRef.damage}\n{templateRef.range}\n{templateRef.speed}\n{unit.warheads[templateRef.damageType]}\n{unit.armors[templateRef.armorType]}", 42, 9, 44, 14)
-                globals.defaultRenderer.InsertText("-->", 7 + longestName, changeTo)
+                globals.defaultRenderer.InsertText("-->", 7 + globals.longestUnitName, changeTo)
         #endif
         globals.defaultRenderer.Overwrite()
         if (lastKey != "enter"):
@@ -186,46 +186,3 @@ def BuildUnits():
     for i in range(globals.startUnitAmt):
         globals.unitList.append(unit.Unit(globals.startPositions[5 + i][0], globals.startPositions[5 + i][1], globals.unitTemplates[random.randint(0, len(globals.unitTemplates) - 1)], 1))
 #enddef BuildUnits
-
-"""
-def printWhite(data):
-    print(Fore.WHITE,data,end="",sep="")
-
-def printRed(data):
-    print(Fore.RED,data,end="",sep="")
-
-def printGreen(data):
-    print(Fore.GREEN,data,end="",sep="")
-
-def printScreen():
-    corners = {
-        "upperLeft":     "┌",    
-        "upperRight":    "┐",    
-        "mediumLeft":    "├",     
-        "mediumRight":   "┤",    
-        "bottomLeft":    "└",    
-        "bottomRight":   "┘",    
-        "upperMid":      "┬",    
-        "midiumMid":     "┼",    
-        "bottomMid":     "┴" 
-        }
-    lines =   {
-        "vertical": "│",        
-        "horizontal": "─"       
-        }
-
-    verticalLine = [lines["horizontal"]*3]*globals.mapSizeX
-    verticalUp = corners["upperMid"].join(verticalLine)
-    verticalMid = corners["midiumMid"].join(verticalLine)
-    verticalDown = corners["bottomMid"].join(verticalLine)
-   
-    printWhite(corners["upperLeft"]+verticalUp+corners["upperRight"]+"\n")
-    for i in range(globals.mapSizeX):
-        printWhite(lines["vertical"])
-        for j in range(globals.mapSizeY):
-            printWhite("   ")
-            printWhite(lines["vertical"])            
-        print()
-        if(i < globals.mapSizeY-1): printWhite(corners["mediumLeft"]+verticalMid+corners["mediumRight"]+"\n")
-    printWhite(corners["bottomLeft"]+verticalDown+corners["bottomRight"]+"\n")
-"""

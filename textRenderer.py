@@ -56,6 +56,7 @@ def clearScreen():
         os.system("clear")
     elif platform == "win32":
         os.system("cls")
+    resetCursorPos()
 
 def setCursorPos(x, y):
     print(f"\033[{y};{x}H", end="")
