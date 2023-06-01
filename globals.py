@@ -2,6 +2,8 @@ import textRenderer
 
 gameState = 0
 gameRunning = False
+gameFinish = False
+winner = -1
 
 defaultRenderer = textRenderer.TextRenderer(0, 0)
 mapSizeX = 0

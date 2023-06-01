@@ -6,8 +6,6 @@ import keyboard
 import random
 import colorama
 
-prevPosX = []
-prevPosY = []
 curSelect = 0
 curX = 0
 curY = 0
@@ -29,8 +27,58 @@ def FillTileColor(x, y, foreground, background):
     globals.defaultRenderer.FillColor(background, x * 4, y * 2, (x + 1) * 4, (y + 1) * 2)
     globals.defaultRenderer.SetColor((foreground << 4) + background, x * 4 + 2, y * 2 + 1)
 
+def CheckWinCon():
+    playerUnitCounts = []
+    livingPlayers = []
+    for i in range(globals.playerAmt):
+        playerUnitCounts.append(0)
+
+    for cUnit in globals.unitList:
+        if (cUnit.health > 0):
+            playerUnitCounts[cUnit.ownerId] += 1
+
+    for i in range(globals.playerAmt):
+        if (playerUnitCounts[i] > 0):
+            livingPlayers.append(i)
+
+    if (len(livingPlayers) == 1):
+        DeclareWin(livingPlayers[0])
+
+def DeclareWin(playerId):
+    globals.gameFinish = True
+    globals.winner = playerId
+
+def ShowWinScreen():
+    textRenderer.clearScreen()
+    if (globals.winner == 0):
+        print(textRenderer.GetColorCode(textRenderer.GREEN, 0), f"\n\n\t\t\tWygrałeś!\n\tNaciśnij dowolny przycisk aby wyjść", sep="")
+    else:
+        print(textRenderer.GetColorCode(textRenderer.RED, 0), f"\n\n\t\t\tPrzegrałeś!\n\tNaciśnij dowolny przycisk aby wyjść", sep="")
+    keyboard.read_key()
+    #print(f"Wygrywa gracz {globals.winner + 1}!")
+
+def Attack(attacker, victim):
+    if (attacker == None or victim == None):
+        return False
+    
+    if (attacker.health > 0 and attacker.moveRem > 0):
+        dist = globals.Dist(attacker.posX, attacker.posY, victim.posX, victim.posY)
+        if (attacker.ownerId != victim.ownerId and dist <= attacker.range): #atak
+            victim.takeDamage(attacker.damage, attacker.damageType)
+            attacker.moveRem = 0
+            if (victim.health > 0 and dist <= victim.range): #atak odwetowy
+                attacker.takeDamage(victim.damage * 0.5, victim.damageType)
+        else:
+            return False
+    else:
+        return False
+    
+    if (attacker.health == 0 or victim.health == 0):
+        CheckWinCon()
+    return victim.health
+
 def StartGame():
-    global gridSizeX, gridSizeY
+    global gridSizeX, gridSizeY, curX, curY, curSelect
     gridSizeX = globals.camSizeX * 4 + 1
     gridSizeY = globals.camSizeY * 2 + 1
     
@@ -38,9 +86,6 @@ def StartGame():
     curX = 0
     curY = 0
     curSelect = 0
-    for i in globals.unitList:
-        prevPosX.append(i.posX)
-        prevPosY.append(i.posY)
 
     globals.gameState = 1
     globals.gameRunning = True
@@ -51,6 +96,11 @@ def StartGame():
 def GameLoop():
     lastKey = ""
     while (globals.gameRunning == True):
+        if (globals.gameFinish):
+            globals.gameRunning = False
+            ShowWinScreen()
+            break
+
         if (not KeyHandler_Basic(lastKey)): # jeśli naciśnięty klawisz nie jest obsłużony przez podstawową funkcję
             if (globals.gameState == 2):  #ruch
                 KeyHandler_Move(lastKey)
@@ -70,11 +120,37 @@ def GameLoop():
         sleep(0.016)
 
 def EndTurn():
-    for i in globals.unitList:
-        i.moveRem = i.speed
+    for cUnit in globals.unitList:
+        if (cUnit.health == 0):
+            continue
 
-        prevPosX.append(i.posX)
-        prevPosY.append(i.posY)
+        if (cUnit.ownerId != 0):
+            nearestEnemy = None
+            for target in globals.unitList:
+                if (target.ownerId == cUnit.ownerId or target.health == 0):
+                    continue
+                
+                if (nearestEnemy == None or globals.Dist(cUnit.posX, cUnit.posY, target.posX, target.posY) < globals.Dist(cUnit.posX, cUnit.posY, nearestEnemy.posX, nearestEnemy.posY)):
+                    nearestEnemy = target
+            
+            if (nearestEnemy == None):
+                CheckWinCon()
+                return
+                #print("Brak najbliższego przeciwnika, coś jest bardzo nie tak")
+                #keyboard.read_key()
+            else:
+                pathToTarget = cUnit.pathToTarget(nearestEnemy)
+                for ticks in range(min(cUnit.moveRem, len(pathToTarget))):
+                    cUnit.setPos(pathToTarget[0].srcX, pathToTarget[0].srcY)
+                    pathToTarget = pathToTarget[1::]
+                    cUnit.moveRem -= 1
+
+                if (len(pathToTarget) == 0 and cUnit.moveRem > 0):
+                    Attack(cUnit, nearestEnemy)
+
+        cUnit.moveRem = cUnit.speed
+        
+
 
 def KeyHandler_Basic(key):
     global curX, curY, curSelect
@@ -251,22 +327,10 @@ def KeyHandler_Attack(key):
         handled = True
     elif (key == "enter"):
         curUnit = globals.unitList[curSelect]
-        if (curUnit.health > 0 and curUnit.moveRem > 0):
-            unitAtTarget = globals.GetUnitAt(curX, curY)
-            if (unitAtTarget != None):
-                dist = globals.Dist(curUnit.posX, curUnit.posY, unitAtTarget.posX, unitAtTarget.posY)
-                if (unitAtTarget.ownerId != 0 and dist <= curUnit.range): #atak
-                    unitAtTarget.takeDamage(curUnit.damage, curUnit.damageType)
-                    curUnit.moveRem = 0
-                    if (unitAtTarget.health > 0 and dist <= unitAtTarget.range): #atak odwetowy
-                        curUnit.takeDamage(unitAtTarget.damage * 0.5, unitAtTarget.damageType)
-                        if (curUnit.health == 0):
-                            globals.gameState = 1
-                        #endif
-                    #endif
-                #endif
-            #endif
-        #endif
+        unitAtTarget = globals.GetUnitAt(curX, curY)
+        if (Attack(curUnit, unitAtTarget)):
+            if (curUnit.health == 0):
+                globals.gameState = 1
         handled = True
     elif (key == "1"):
         if (globals.unitList[0].health > 0):
@@ -419,7 +483,7 @@ def RenderMap():
         for i in range(globals.startUnitAmt):
             globals.defaultRenderer.InsertText(f"U{i + 1}: {globals.unitTemplates[globals.unitList[i].typeId].displayName}", 1, gridSizeY + 8 + i)
             if (globals.unitList[i].health <= 0):
-                globals.defaultRenderer.FillColor(textRenderer.RED, 0, gridSizeY + 7 + i, 5 + globals.longestUnitName, gridSizeY + 7 + i)
+                globals.defaultRenderer.FillColor(textRenderer.RED, 0, gridSizeY + 8 + i, 5 + globals.longestUnitName, gridSizeY + 8 + i)
 
         globals.defaultRenderer.SetChar(">", 0, gridSizeY + 8 + curSelect)
         if (curUnit.health > 0):

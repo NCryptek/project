@@ -180,8 +180,9 @@ def BuildUnits():
         sleep(0.1)
     #endwhile
 
-    for i in selects:
-        globals.unitList.append(unit.Unit(globals.startPositions[i][0], globals.startPositions[i][1], globals.unitTemplates[i], 0))
+    globals.unitList = []
+    for i in range(globals.startUnitAmt):
+        globals.unitList.append(unit.Unit(globals.startPositions[i][0], globals.startPositions[i][1], globals.unitTemplates[selects[i]], 0))
 
     for i in range(globals.startUnitAmt):
         globals.unitList.append(unit.Unit(globals.startPositions[5 + i][0], globals.startPositions[5 + i][1], globals.unitTemplates[random.randint(0, len(globals.unitTemplates) - 1)], 1))
