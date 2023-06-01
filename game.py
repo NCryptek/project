@@ -114,12 +114,18 @@ def KeyHandler_Basic(key):
                 curSelect -= 1
             else:
                 curSelect = globals.startUnitAmt - 1
+
+            if (globals.unitList[curSelect].health > 0):
+                CenterCam(globals.unitList[curSelect])
             handled = True
         elif (key == "down"):
             if (curSelect < globals.startUnitAmt - 1):
                 curSelect += 1
             else:
                 curSelect = 0
+
+            if (globals.unitList[curSelect].health > 0):
+                CenterCam(globals.unitList[curSelect])
             handled = True
         elif (key == "1"):
             if (globals.unitList[0].health > 0):
@@ -242,28 +248,44 @@ def KeyHandler_Attack(key):
         CenterCamPos(curX, curY)
         handled = True
     elif (key == "enter"):
-        unitAtTarget = globals.GetUnitAt(curX, curY)
+        curUnit = globals.unitList[curSelect]
+        if (curUnit.health > 0):
+            unitAtTarget = globals.GetUnitAt(curX, curY)
+            dist = globals.Dist(curUnit.posX, curUnit.posY, unitAtTarget.posX, unitAtTarget.posY)
+
+            if (unitAtTarget != None and unitAtTarget.ownerId != 0 and dist <= curUnit.range): #atak
+                unitAtTarget.takeDamage(curUnit.damage, curUnit.damageType)
+                if (unitAtTarget.health > 0 and dist <= unitAtTarget.range): #atak odwetowy
+                    curUnit.takeDamage(unitAtTarget.damage * 0.5, unitAtTarget.damageType)
+
         handled = True
+    elif (key == "1"):
+        pass
 
     return handled
 
 def KeyHandler_Camera(key):
+    global curX, curY, curSelect
     handled = False
     if (key == "left"):
-        if (globals.camOffsetX > 0):
-            globals.camOffsetX -= 1
+        if (curX > 0):
+            curX -= 1
+        CenterCamPos(curX, curY)
         handled = True
     elif (key == "up"):
-        if (globals.camOffsetY > 0):
-            globals.camOffsetY -= 1
+        if (curY > 0):
+            curY -= 1
+        CenterCamPos(curX, curY)
         handled = True
     elif (key == "right"):
-        if (globals.camOffsetX + globals.camSizeX < globals.mapSizeX):
-            globals.camOffsetX += 1
+        if (curX < globals.mapSizeX - 1):
+            curX += 1
+        CenterCamPos(curX, curY)
         handled = True
     elif (key == "down"):
-        if (globals.camOffsetY + globals.camSizeY < globals.mapSizeY):
-            globals.camOffsetY += 1
+        if (curY < globals.mapSizeY - 1):
+            curY += 1
+        CenterCamPos(curX, curY)
         handled = True
     elif (key == "1"):
         if (globals.unitList[0].health > 0):
@@ -345,7 +367,7 @@ def RenderMap():
         for i in range(globals.startUnitAmt):
             globals.defaultRenderer.InsertText(f"U{i + 1}: {globals.unitTemplates[globals.unitList[i].typeId].displayName}", 1, gridSizeY + 8 + i)
             if (globals.unitList[i].health <= 0):
-                globals.defaultRenderer.FillColor(textRenderer.RED, 0, gridSizeY + 1 + i, 5 + globals.longestUnitName, gridSizeY + 8 + i)
+                globals.defaultRenderer.FillColor(textRenderer.RED, 0, gridSizeY + 7 + i, 5 + globals.longestUnitName, gridSizeY + 7 + i)
 
         globals.defaultRenderer.SetChar(">", 0, gridSizeY + 8 + curSelect)
         if (curUnit.health > 0):
@@ -369,6 +391,9 @@ def RenderMap():
 
         globals.defaultRenderer.InsertTextSpecial(f"Escape - cofnij\n1-5 - szybki wybór jednostki\nEnter - zatwierdź\n\nRuch jednostką U{curSelect + 1}\nPozostałe ruchy: {curUnit.moveRem}/{curUnit.speed} (-{len(renderPath)})", 1, gridSizeY + 1, globals.defaultRenderer.sizeX, gridSizeY + 6)
     elif (globals.gameState == 3): #atak jednostką
+        globals.defaultRenderer.InsertTextSpecial(f"Escape - cofnij\n1-5 - szybki wybór jednostki\nEnter - zatwierdź\n\n", 1, gridSizeY + 1, globals.defaultRenderer.sizeX, gridSizeY + 3)
+
+
         globals.defaultRenderer.SetChar("V", renderCursorX, renderCursorY)
         targetDist = abs(curY - curUnit.posY) + abs(curX - curUnit.posX)
         unitAtTarget = globals.GetUnitAt(curX, curY)
@@ -388,7 +413,7 @@ def RenderMap():
             FillTileColor(curX - globals.camOffsetX, curY - globals.camOffsetY, textRenderer.GREEN, textRenderer.GREEN)
 
     elif (globals.gameState == 4): #sterowanie kamerą
-        globals.defaultRenderer.InsertTextSpecial(f"Escape - powrót\n\nRuch kamerą\nPrzesunięcie: ({globals.camOffsetX}, {globals.camOffsetY})", 1, gridSizeY + 1, globals.defaultRenderer.sizeX - 1, gridSizeY + 4)
+        globals.defaultRenderer.InsertTextSpecial(f"Escape - powrót\n\nRuch kamerą\nKursor: ({curX}, {curY})", 1, gridSizeY + 1, globals.defaultRenderer.sizeX - 1, gridSizeY + 4)
         pass
     
     globals.defaultRenderer.Overwrite()
