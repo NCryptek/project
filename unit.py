@@ -62,14 +62,14 @@ class Unit:
                 self.health -= (dmg * 0.75)
         if (self.health <= 0):
             self.health = 0
-            self.posX = -1
-            self.posY = -1
+            self.setPos(-1, -1)
         
     def setPos(self, x, y):
         globals.tileList[self.posY * globals.mapSizeX + self.posX] = None
         self.posX = x
         self.posY = y
-        globals.tileList[y * globals.mapSizeX + x] = self
+        if (x > 0 and x < globals.mapSizeX and y > 0 and y < globals.mapSizeY):
+          globals.tileList[y * globals.mapSizeX + x] = self
 
     def moveTo(self, x, y):
         dist = globals.Dist(self.posX, self.posY, x, y)
