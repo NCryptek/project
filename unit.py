@@ -18,6 +18,12 @@ armors = [
     "CK"
 ]
 
+dmgEff = [
+    [1.0,  0.5 ],
+    [0.5,  1.0 ],
+    [0.75, 0.75]
+]
+
 class PathTile:
     def __init__(self, x, y, cost, parent):
         self.srcX = x
@@ -46,20 +52,24 @@ class Unit:
             globals.tileList[self.posY * globals.mapSizeX + self.posX] = self
         
     def takeDamage(self, dmg, dT):
-        if (self.armorType == 0): #Light
-            if (dT == 0): #SA
-                self.health -= dmg
-            elif (dT == 1): #AT
-                self.health -= (dmg * 0.5)
-            elif (dT == 2): #HE
-                self.health -= (dmg * 0.75)
-        elif (self.armorType == 1): #Heavy
-            if (dT == 0): #SA
-                self.health -= (dmg * 0.5)
-            elif (dT == 1): #AT
-                self.health -= dmg
-            elif (dT == 2): #HE
-                self.health -= (dmg * 0.75)
+        try:
+            self.health -= (dmg * dmgEff[dT][self.armorType])
+        except:
+            pass
+        #if (self.armorType == 0): #Light
+        #    if (dT == 0): #SA
+        #        self.health -= dmg
+        #    elif (dT == 1): #AT
+        #        self.health -= (dmg * 0.5)
+        #    elif (dT == 2): #HE
+        #        self.health -= (dmg * 0.75)
+        #elif (self.armorType == 1): #Heavy
+        #    if (dT == 0): #SA
+        #        self.health -= (dmg * 0.5)
+        #    elif (dT == 1): #AT
+        #        self.health -= dmg
+        #    elif (dT == 2): #HE
+        #        self.health -= (dmg * 0.75)
         if (self.health <= 0):
             self.health = 0
             self.setPos(-1, -1)

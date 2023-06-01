@@ -34,7 +34,7 @@ def StartGame():
     gridSizeX = globals.camSizeX * 4 + 1
     gridSizeY = globals.camSizeY * 2 + 1
     
-    globals.defaultRenderer.Resize(max(max(27 + globals.longestUnitName, 44), globals.camSizeX * 4 + 1), globals.camSizeY * 2 + 1 + 13) #+13 na dodatkowe informacje
+    globals.defaultRenderer.Resize(max(max(27 + globals.longestUnitName, 44), globals.camSizeX * 4 + 1), globals.camSizeY * 2 + 1 + 20) #+20 na dodatkowe informacje
     curX = 0
     curY = 0
     curSelect = 0
@@ -93,15 +93,17 @@ def KeyHandler_Basic(key):
         handled = True
         pass
     elif (key == "m"):
-        curX = globals.unitList[curSelect].posX
-        curY = globals.unitList[curSelect].posY
-        globals.gameState = 2
+        if (globals.unitList[curSelect].health > 0):
+            curX = globals.unitList[curSelect].posX
+            curY = globals.unitList[curSelect].posY
+            globals.gameState = 2
         handled = True
         pass
     elif (key == "a"):
-        curX = globals.unitList[curSelect].posX
-        curY = globals.unitList[curSelect].posY
-        globals.gameState = 3
+        if (globals.unitList[curSelect].health > 0):
+            curX = globals.unitList[curSelect].posX
+            curY = globals.unitList[curSelect].posY
+            globals.gameState = 3
         handled = True
         pass
     elif (key == "c"):
@@ -133,22 +135,22 @@ def KeyHandler_Basic(key):
                 CenterCam(globals.unitList[0])
             handled = True
         elif (key == "2"):
-            if (globals.unitList[1].health > 0):
+            if (globals.startUnitAmt > 1 and globals.unitList[1].health > 0):
                 curSelect = 1
                 CenterCam(globals.unitList[1])
             handled = True
         elif (key == "3"):
-            if (globals.unitList[2].health > 0):
+            if (globals.startUnitAmt > 2 and globals.unitList[2].health > 0):
                 curSelect = 2
                 CenterCam(globals.unitList[2])
             handled = True
         elif (key == "4"):
-            if (globals.unitList[3].health > 0):
+            if (globals.startUnitAmt > 3 and globals.unitList[3].health > 0):
                 curSelect = 3
                 CenterCam(globals.unitList[3])
             handled = True
         elif (key == "5"):
-            if (globals.unitList[4].health > 0):
+            if (globals.startUnitAmt > 4 and globals.unitList[4].health > 0):
                 curSelect = 4
                 CenterCam(globals.unitList[4])
             handled = True
@@ -186,7 +188,7 @@ def KeyHandler_Move(key):
         handled = True
         pass
     elif (key == "2"):
-        if (globals.unitList[1].health > 0):
+        if (globals.startUnitAmt > 1 and globals.unitList[1].health > 0):
             CenterCam(globals.unitList[1])
             curX = globals.unitList[1].posX
             curY = globals.unitList[1].posY
@@ -194,7 +196,7 @@ def KeyHandler_Move(key):
         handled = True
         pass
     elif (key == "3"):
-        if (globals.unitList[2].health > 0):
+        if (globals.startUnitAmt > 2 and globals.unitList[2].health > 0):
             CenterCam(globals.unitList[2])
             curX = globals.unitList[2].posX
             curY = globals.unitList[2].posY
@@ -202,7 +204,7 @@ def KeyHandler_Move(key):
         handled = True
         pass
     elif (key == "4"):
-        if (globals.unitList[3].health > 0):
+        if (globals.startUnitAmt > 3 and globals.unitList[3].health > 0):
             CenterCam(globals.unitList[3])
             curX = globals.unitList[3].posX
             curY = globals.unitList[3].posY
@@ -210,7 +212,7 @@ def KeyHandler_Move(key):
         handled = True
         pass
     elif (key == "5"):
-        if (globals.unitList[4].health > 0):
+        if (globals.startUnitAmt > 4 and globals.unitList[4].health > 0):
             CenterCam(globals.unitList[4])
             curX = globals.unitList[4].posX
             curY = globals.unitList[4].posY
@@ -233,12 +235,12 @@ def KeyHandler_Attack(key):
         CenterCamPos(curX, curY)
         handled = True
     elif(key == "down"):
-        if (curY < globals.mapSizeY):
+        if (curY < globals.mapSizeY - 1):
             curY += 1
         CenterCamPos(curX, curY)
         handled = True
     elif(key == "right"):
-        if (curX < globals.mapSizeX):
+        if (curX < globals.mapSizeX - 1):
             curX += 1
         CenterCamPos(curX, curY)
         handled = True
@@ -249,18 +251,58 @@ def KeyHandler_Attack(key):
         handled = True
     elif (key == "enter"):
         curUnit = globals.unitList[curSelect]
-        if (curUnit.health > 0):
+        if (curUnit.health > 0 and curUnit.moveRem > 0):
             unitAtTarget = globals.GetUnitAt(curX, curY)
-            dist = globals.Dist(curUnit.posX, curUnit.posY, unitAtTarget.posX, unitAtTarget.posY)
-
-            if (unitAtTarget != None and unitAtTarget.ownerId != 0 and dist <= curUnit.range): #atak
-                unitAtTarget.takeDamage(curUnit.damage, curUnit.damageType)
-                if (unitAtTarget.health > 0 and dist <= unitAtTarget.range): #atak odwetowy
-                    curUnit.takeDamage(unitAtTarget.damage * 0.5, unitAtTarget.damageType)
-
+            if (unitAtTarget != None):
+                dist = globals.Dist(curUnit.posX, curUnit.posY, unitAtTarget.posX, unitAtTarget.posY)
+                if (unitAtTarget.ownerId != 0 and dist <= curUnit.range): #atak
+                    unitAtTarget.takeDamage(curUnit.damage, curUnit.damageType)
+                    curUnit.moveRem = 0
+                    if (unitAtTarget.health > 0 and dist <= unitAtTarget.range): #atak odwetowy
+                        curUnit.takeDamage(unitAtTarget.damage * 0.5, unitAtTarget.damageType)
+                        if (curUnit.health == 0):
+                            globals.gameState = 1
+                        #endif
+                    #endif
+                #endif
+            #endif
+        #endif
         handled = True
     elif (key == "1"):
-        pass
+        if (globals.unitList[0].health > 0):
+            CenterCam(globals.unitList[0])
+            curX = globals.unitList[0].posX
+            curY = globals.unitList[0].posY
+            curSelect = 0
+        handled = True
+    elif (key == "2"):
+        if (globals.startUnitAmt > 1 and globals.unitList[0].health > 0):
+            CenterCam(globals.unitList[0])
+            curX = globals.unitList[0].posX
+            curY = globals.unitList[0].posY
+            curSelect = 0
+        handled = True
+    elif (key == "3"):
+        if (globals.startUnitAmt > 2 and globals.unitList[0].health > 0):
+            CenterCam(globals.unitList[0])
+            curX = globals.unitList[0].posX
+            curY = globals.unitList[0].posY
+            curSelect = 0
+        handled = True
+    elif (key == "4"):
+        if (globals.startUnitAmt > 3 and globals.unitList[0].health > 0):
+            CenterCam(globals.unitList[0])
+            curX = globals.unitList[0].posX
+            curY = globals.unitList[0].posY
+            curSelect = 0
+        handled = True
+    elif (key == "5"):
+        if (globals.startUnitAmt > 4 and globals.unitList[0].health > 0):
+            CenterCam(globals.unitList[0])
+            curX = globals.unitList[0].posX
+            curY = globals.unitList[0].posY
+            curSelect = 0
+        handled = True
 
     return handled
 
@@ -289,26 +331,36 @@ def KeyHandler_Camera(key):
         handled = True
     elif (key == "1"):
         if (globals.unitList[0].health > 0):
+            curX = globals.unitList[0].posX
+            curY = globals.unitList[0].posY
             CenterCam(globals.unitList[0])
         handled = True
         pass
     elif (key == "2"):
-        if (globals.unitList[1].health > 0):
+        if (globals.startUnitAmt > 1 and globals.unitList[1].health > 0):
+            curX = globals.unitList[1].posX
+            curY = globals.unitList[1].posY
             CenterCam(globals.unitList[1])
         handled = True
         pass
     elif (key == "3"):
-        if (globals.unitList[2].health > 0):
+        if (globals.startUnitAmt > 2 and globals.unitList[2].health > 0):
+            curX = globals.unitList[2].posX
+            curY = globals.unitList[2].posY
             CenterCam(globals.unitList[2])
         handled = True
         pass
     elif (key == "4"):
-        if (globals.unitList[3].health > 0):
+        if (globals.startUnitAmt > 3 and globals.unitList[3].health > 0):
+            curX = globals.unitList[3].posX
+            curY = globals.unitList[3].posY
             CenterCam(globals.unitList[3])
         handled = True
         pass
     elif (key == "5"):
-        if (globals.unitList[4].health > 0):
+        if (globals.startUnitAmt > 4 and globals.unitList[4].health > 0):
+            curX = globals.unitList[4].posX
+            curY = globals.unitList[4].posY
             CenterCam(globals.unitList[4])
         handled = True
     
@@ -371,8 +423,8 @@ def RenderMap():
 
         globals.defaultRenderer.SetChar(">", 0, gridSizeY + 8 + curSelect)
         if (curUnit.health > 0):
-            globals.defaultRenderer.InsertTextSpecial("Życie:\nAtak:\nZasięg\nRuchy:\nTyp broni:\nTyp pancerza:", 7 + globals.longestUnitName, gridSizeY + 7, globals.defaultRenderer.sizeX, gridSizeY + 13)
-            globals.defaultRenderer.InsertTextSpecial(f"{curUnit.health}/{curTemplate.maxHealth}\n{curTemplate.damage}\n{curTemplate.range}\n{curUnit.moveRem}/{curTemplate.speed}\n{unit.warheads[curTemplate.damageType]}\n{unit.armors[curTemplate.armorType]}", 21 + globals.longestUnitName, gridSizeY + 7, globals.defaultRenderer.sizeX, gridSizeY + 13)
+            globals.defaultRenderer.InsertTextSpecial("Życie:\nAtak:\nZasięg\nRuchy:\nTyp broni:\nTyp pancerza:", 7 + globals.longestUnitName, gridSizeY + 8, globals.defaultRenderer.sizeX, gridSizeY + 14)
+            globals.defaultRenderer.InsertTextSpecial(f"{curUnit.health}/{curTemplate.maxHealth}\n{curTemplate.damage}\n{curTemplate.range}\n{curUnit.moveRem}/{curTemplate.speed}\n{unit.warheads[curTemplate.damageType]}\n{unit.armors[curTemplate.armorType]}", 21 + globals.longestUnitName, gridSizeY + 8, globals.defaultRenderer.sizeX, gridSizeY + 14)
             FillTileColor(curUnit.posX - globals.camOffsetX, curUnit.posY - globals.camOffsetY, textRenderer.RESETCOLOR, textRenderer.GREEN)
 
     elif (globals.gameState == 2): #ruch jednostką
@@ -397,8 +449,8 @@ def RenderMap():
         globals.defaultRenderer.SetChar("V", renderCursorX, renderCursorY)
         targetDist = abs(curY - curUnit.posY) + abs(curX - curUnit.posX)
         unitAtTarget = globals.GetUnitAt(curX, curY)
-        for y in range(max(0, curUnit.posY - curUnit.range), min(curUnit.posY + curUnit.range + 1, globals.mapSizeX - 1)):
-            for x in range(max(0, curUnit.posX - curUnit.range), min(curUnit.posX + curUnit.range + 1, globals.mapSizeY - 1)):
+        for y in range(max(0, curUnit.posY - curUnit.range), min(curUnit.posY + curUnit.range + 1, globals.mapSizeX)):
+            for x in range(max(0, curUnit.posX - curUnit.range), min(curUnit.posX + curUnit.range + 1, globals.mapSizeY)):
                 if (abs(y - curUnit.posY) + abs(x - curUnit.posX) <= curUnit.range):
                     unitAtTemp = globals.GetUnitAt(x, y)
                     if (unitAtTemp == None):
@@ -412,9 +464,58 @@ def RenderMap():
         elif (unitAtTarget != None):
             FillTileColor(curX - globals.camOffsetX, curY - globals.camOffsetY, textRenderer.GREEN, textRenderer.GREEN)
 
+        globals.defaultRenderer.InsertText("Atak", 1, gridSizeY + 5)
+        if (unitAtTarget == None):
+            globals.defaultRenderer.InsertText("Puste pole", 1, gridSizeY + 6)
+        elif (unitAtTarget == curUnit):
+            globals.defaultRenderer.InsertText("Obecna jednostka", 1, gridSizeY + 6)
+        elif (unitAtTarget.ownerId == 0):
+            globals.defaultRenderer.InsertText("Jednostka sojusznicza", 1, gridSizeY + 6)
+        else:
+            globals.defaultRenderer.InsertTextSpecial("Życie:\nAtak:\nZasięg\nRuchy:\nTyp broni:\nTyp pancerza:", 1, gridSizeY + 6, globals.defaultRenderer.sizeX, gridSizeY + 11)
+            globals.defaultRenderer.InsertTextSpecial(f"{curUnit.health}/{globals.unitTemplates[curUnit.typeId].maxHealth}\n{curUnit.damage}\n{curUnit.range}\n{curUnit.moveRem}/{curUnit.speed}\n{unit.warheads[curUnit.damageType]}\n{unit.armors[curUnit.armorType]}", 16, gridSizeY + 6, globals.defaultRenderer.sizeX, gridSizeY + 11)
+            globals.defaultRenderer.FillColor(textRenderer.GREEN << 4, 1, gridSizeY + 6, 20, gridSizeY + 11)
+
+            globals.defaultRenderer.InsertText("-->", 21, gridSizeY + 6)
+            
+            globals.defaultRenderer.InsertTextSpecial("Życie:\nAtak:\nZasięg\nRuchy:\nTyp broni:\nTyp pancerza:", 25, gridSizeY + 6, globals.defaultRenderer.sizeX, gridSizeY + 11)
+            globals.defaultRenderer.InsertTextSpecial(f"{unitAtTarget.health}/{globals.unitTemplates[unitAtTarget.typeId].maxHealth}\n{unitAtTarget.damage}\n{unitAtTarget.range}\n{unitAtTarget.moveRem}/{unitAtTarget.speed}\n{unit.warheads[unitAtTarget.damageType]}\n{unit.armors[unitAtTarget.armorType]}", 41, gridSizeY + 6, globals.defaultRenderer.sizeX, gridSizeY + 11)
+            globals.defaultRenderer.FillColor(textRenderer.RED << 4, 25, gridSizeY + 6, globals.defaultRenderer.sizeX, gridSizeY + 11)
+
+            if (curUnit.moveRem == 0):
+                globals.defaultRenderer.InsertText("Brak pozostałych ruchów aby atakować", 1, gridSizeY + 13)
+            elif (targetDist <= curUnit.range):
+                toDmg = curUnit.damage * (unit.dmgEff[curUnit.damageType][unitAtTarget.armorType])
+                globals.defaultRenderer.InsertText(f"Efekt {unit.dmgEff[curUnit.damageType][unitAtTarget.armorType] * 100}% {unit.warheads[curUnit.damageType]}->{unit.armors[unitAtTarget.armorType]}", 25, gridSizeY + 13)
+                globals.defaultRenderer.InsertText(f" {unitAtTarget.health} -> {unitAtTarget.health - toDmg} (-{toDmg})", 25, gridSizeY + 14)
+                if (toDmg < unitAtTarget.health and targetDist <= unitAtTarget.range):
+                    revDmg = unitAtTarget.damage * (unit.dmgEff[unitAtTarget.damageType][curUnit.armorType]) * 0.5
+                    globals.defaultRenderer.InsertText(f"Odwet {unit.dmgEff[unitAtTarget.damageType][curUnit.armorType] * 50}% {unit.warheads[unitAtTarget.damageType]}->{unit.armors[curUnit.armorType]}", 1, gridSizeY + 13)
+                    globals.defaultRenderer.InsertText(f" {curUnit.health} -> {curUnit.health - revDmg} (-{revDmg})", 1, gridSizeY + 14)
+                    if (revDmg >= curUnit.health):
+                        globals.defaultRenderer.InsertText(" Śmierć", 1, gridSizeY + 15)    
+                        globals.defaultRenderer.FillColor(textRenderer.RED << 4, 1, gridSizeY + 15, 8, gridSizeY + 15)
+                else:
+                    globals.defaultRenderer.InsertText("Brak odwetu", 1, gridSizeY + 13)
+                    if (toDmg >= unitAtTarget.health):
+                        globals.defaultRenderer.InsertText(" Śmierć", 25, gridSizeY + 15)
+                        globals.defaultRenderer.FillColor(textRenderer.GREEN << 4, 25, gridSizeY + 15, 32, gridSizeY + 15)
+            else:
+                globals.defaultRenderer.InsertText("Poza zasięgiem", 1, gridSizeY + 13)
+
     elif (globals.gameState == 4): #sterowanie kamerą
+        globals.defaultRenderer.SetChar("V", renderCursorX, renderCursorY)
         globals.defaultRenderer.InsertTextSpecial(f"Escape - powrót\n\nRuch kamerą\nKursor: ({curX}, {curY})", 1, gridSizeY + 1, globals.defaultRenderer.sizeX - 1, gridSizeY + 4)
-        pass
+        unitAtCursor = globals.GetUnitAt(curX, curY)
+        if (unitAtCursor == None):
+            globals.defaultRenderer.InsertText("Puste pole", 1, gridSizeY + 6)
+        else:
+            globals.defaultRenderer.InsertTextSpecial("Życie:\nAtak:\nZasięg\nRuchy:\nTyp broni:\nTyp pancerza:", 1, gridSizeY + 6, globals.defaultRenderer.sizeX, gridSizeY + 11)
+            globals.defaultRenderer.InsertTextSpecial(f"{unitAtCursor.health}/{globals.unitTemplates[unitAtCursor.typeId].maxHealth}\n{unitAtCursor.damage}\n{unitAtCursor.range}\n{unitAtCursor.moveRem}/{unitAtCursor.speed}\n{unit.warheads[unitAtCursor.damageType]}\n{unit.armors[unitAtCursor.armorType]}", 16, gridSizeY + 6, globals.defaultRenderer.sizeX, gridSizeY + 11)
+            if (unitAtCursor.ownerId == 0):
+                globals.defaultRenderer.FillColor(textRenderer.GREEN << 4, 1, gridSizeY + 6, globals.defaultRenderer.sizeX, gridSizeY + 11)
+            else:
+                globals.defaultRenderer.FillColor(textRenderer.RED << 4, 1, gridSizeY + 6, globals.defaultRenderer.sizeX, gridSizeY + 11)
     
     globals.defaultRenderer.Overwrite()
 
